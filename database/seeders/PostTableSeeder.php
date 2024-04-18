@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Comment;
+use App\Models\CommentLike;
 use App\Models\Like;
 use App\Models\Post;
 use Faker\Factory as Faker;
@@ -47,6 +48,16 @@ class PostTableSeeder extends Seeder
                     $comment->comment = $faker->sentence(3);
                     $comment->status = 1;
                     $comment->save();
+
+                    $comment_like_st = rand(0, 1);
+                    if ($comment_like_st == 1) {
+                        for ($l = 0; $l < rand(0, 7); $j++) {
+                            $c_like = new CommentLike();
+                            $c_like->user_id = rand(1, 7);
+                            $c_like->comment_id = $comment->id;
+                            $c_like->save();
+                        }
+                    }
 
                     $reply = rand(0, 1);
                     if ($reply == 1) {
