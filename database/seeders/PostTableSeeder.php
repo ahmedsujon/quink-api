@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Comment;
+use App\Models\Like;
 use App\Models\Post;
-use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
+use Illuminate\Database\Seeder;
 
 class PostTableSeeder extends Seeder
 {
@@ -29,12 +31,48 @@ class PostTableSeeder extends Seeder
             }
 
             $post = new Post();
-            $post->user_id = rand(1,2);
+            $post->user_id = rand(1, 2);
             $post->caption = $caption;
             $post->content = $content;
             $post->tags = [];
             $post->type = $type;
             $post->save();
+
+            $com_st = rand(0, 1);
+            if ($com_st == 1) {
+                for ($j = 0; $j < 15; $j++) {
+                    $comment = new Comment();
+                    $comment->user_id = rand(3, 7);
+                    $comment->post_id = $post->id;
+                    $comment->comment = $faker->sentence(3);
+                    $comment->status = 1;
+                    $comment->save();
+
+                    $reply = rand(0, 1);
+                    if ($reply == 1) {
+                        for ($k = 0; $k < rand(1, 3); $k++) {
+                            $reply = new Comment();
+                            $reply->parent_id = $comment->id;
+                            $reply->user_id = rand(3, 7);
+                            $reply->post_id = $post->id;
+                            $reply->comment = $faker->sentence(3);
+                            $reply->status = 1;
+                            $reply->save();
+                        }
+                    }
+
+                }
+            }
+
+            $like_st = rand(0, 1);
+            if ($like_st == 1) {
+                for ($l = 0; $l < rand(0, 7); $j++) {
+                    $like = new Like();
+                    $like->user_id = rand(1, 7);
+                    $like->post_id = $post->id;
+                    $like->save();
+                }
+            }
         }
     }
 }
