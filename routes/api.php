@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\app\HomeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\user\auth\AuthenticationController;
@@ -20,6 +21,8 @@ Route::post('v1/login', [AuthenticationController::class, 'login']);
 Route::post('v1/register', [AuthenticationController::class, 'register']);
 Route::post('v1/reset-password', [UserResetPasswordController::class, 'sendEmail']);
 Route::post('v1/change-password', [UserResetPasswordController::class, 'changePassword']);
+
+Route::get('v1/trending-posts', [HomeController::class, 'trendingPosts']);
 
 //Authenticated user
 Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/user'], function () {
