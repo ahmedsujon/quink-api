@@ -22,20 +22,22 @@ class PostTableSeeder extends Seeder
             $type = $faker->randomElement(['photo', 'video', 'story']);
             if ($type == 'photo') {
                 $content = 'assets/images/post-img.jpg';
-                $caption = $faker->sentence(1);
+                $title = $faker->sentence(1);
             } else if ($type == 'video') {
                 $content = 'assets/videos/reel_' . $faker->randomElement(['a', 'b', 'c']) . '.mp4';
-                $caption = $faker->sentence(1);
+                $title = $faker->sentence(1);
             } else {
                 $content = 'assets/images/post-img.jpg';
-                $caption = $faker->sentence(1);
+                $title = $faker->sentence(1);
             }
 
             $post = new Post();
             $post->user_id = rand(1, 2);
-            $post->caption = $caption;
+            $post->title = $title;
+            $post->description = $faker->paragraph(2);
             $post->content = $content;
-            $post->tags = [];
+            $post->hash_tags = $faker->randomElement([["HASH_1", "HASH_2"], ["HASH_1"], ["HASH_3", "HASH_4",], ["HASH_1", "HASH_4"]]);
+            $post->tags = $faker->randomElement([['3', '4'], ['3'], ['4','5'], ['5']]);
             $post->type = $type;
             $post->save();
 

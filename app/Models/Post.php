@@ -11,6 +11,7 @@ class Post extends Model
 
     protected $table = 'posts';
     protected $casts = [
+        'hash_tags' => 'array',
         'tags' => 'array',
     ];
 }
