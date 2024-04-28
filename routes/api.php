@@ -22,7 +22,9 @@ Route::post('v1/reset-password', [UserResetPasswordController::class, 'sendEmail
 Route::post('v1/validate-otp', [UserResetPasswordController::class, 'validateOtp']);
 Route::post('v1/change-password', [UserResetPasswordController::class, 'changePassword']);
 
-Route::get('v1/trending-posts', [HomeController::class, 'trendingPosts']);
+Route::get('v1/trending-photos', [HomeController::class, 'trendingPhotos']);
+Route::get('v1/trending-videos', [HomeController::class, 'trendingVideos']);
+Route::get('v1/trending-stories', [HomeController::class, 'trendingStories']);
 
 //Authenticated user
 Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/user'], function () {
