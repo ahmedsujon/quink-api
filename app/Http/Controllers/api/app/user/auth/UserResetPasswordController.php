@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\api\user\auth;
+namespace App\Http\Controllers\api\app\user\auth;
 
-use Carbon\Carbon;
+use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Support\Str;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class UserResetPasswordController extends Controller
 {
@@ -50,29 +50,29 @@ class UserResetPasswordController extends Controller
         $oldToken = DB::table('password_reset_tokens')->where('email', $email)->first();
 
         if ($oldToken) {
-            $otp = rand(10000000, 99999999);
+            $otp = rand(1000, 9999);
             DB::table('password_reset_tokens')->update([
                 'otp' => $otp,
-                'created_at' => Carbon::now()
+                'created_at' => Carbon::now(),
             ]);
             return [
                 'token' => $oldToken->token,
-                'otp' => $otp
+                'otp' => $otp,
             ];
         } else {
             $token = Str::random(40);
-            $otp = rand(10000000, 99999999);
+            $otp = rand(1000, 9999);
 
             DB::table('password_reset_tokens')->insert([
                 'email' => $email,
                 'token' => $token,
                 'otp' => $otp,
-                'created_at' => Carbon::now()
+                'created_at' => Carbon::now(),
             ]);
 
             return [
                 'token' => $token,
-                'otp' => $otp
+                'otp' => $otp,
             ];
         }
     }
@@ -80,25 +80,23 @@ class UserResetPasswordController extends Controller
     public function failedResponse()
     {
         return response()->json([
-            'error' => 'No user found with this email'
+            'error' => 'No user found with this email',
         ], Response::HTTP_NOT_FOUND);
     }
 
     public function successResponse()
     {
         return response()->json([
-            'success' => 'Password reset email has beed sent successfully, please check your inbox.'
+            'success' => 'Password reset email has beed sent successfully, please check your inbox.',
         ], Response::HTTP_OK);
     }
 
-    //Change Password
-    public function changePassword(Request $request)
+    //validate otp
+    public function validateOtp(Request $request)
     {
         $rules = [
             'email' => 'required|email',
             'otp' => 'required',
-            'password' => 'required|min:8',
-            'confirm_password' => 'required|min:8|same:password',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -107,17 +105,40 @@ class UserResetPasswordController extends Controller
 
         $getRequest = DB::table('password_reset_tokens')->where('email', $request->email)->where('otp', $request->otp)->first();
         if ($getRequest) {
+            DB::table('password_reset_tokens')->where('email', $request->email)->where('otp', $request->otp)->delete();
+            return response()->json(['result' => true, 'message' => 'Good to go!']);
+        } else {
+            return response()->json([
+                'result' => false,
+                'message' => 'Incorrect OTP',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    //Change Password
+    public function changePassword(Request $request)
+    {
+        $rules = [
+            'email' => 'required|email',
+            'password' => 'required|min:8',
+            'confirm_password' => 'required|min:8|same:password',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $getUser = DB::table('users')->where('email', $request->email)->first();
+        if ($getUser) {
             $user = User::where('email', $request->email)->first();
             $user->password = Hash::make($request->password);
             $user->save();
 
-            DB::table('password_reset_tokens')->where('email', $request->email)->where('otp', $request->otp)->delete();
-
-            return response()->json(['success' => 'Password updated successfully']);
+            return response()->json(['result' => true, 'message' => 'Password updated successfully']);
         } else {
             return response()->json([
                 'result' => false,
-                'message' => 'Incorrect OTP'
+                'message' => 'No user found!',
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }

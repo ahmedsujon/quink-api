@@ -19,23 +19,25 @@ class PostTableSeeder extends Seeder
         for ($i = 0; $i < 25; $i++) {
             $faker = Faker::create();
 
-            $type = $faker->randomElement(['photo', 'video', 'text']);
+            $type = $faker->randomElement(['photo', 'video', 'story']);
             if ($type == 'photo') {
                 $content = 'assets/images/post-img.jpg';
-                $caption = $faker->sentence(1);
+                $title = $faker->sentence(1);
             } else if ($type == 'video') {
                 $content = 'assets/videos/reel_' . $faker->randomElement(['a', 'b', 'c']) . '.mp4';
-                $caption = $faker->sentence(1);
+                $title = $faker->sentence(1);
             } else {
-                $content = $faker->paragraph;
-                $caption = $faker->sentence(1);
+                $content = 'assets/images/post-img.jpg';
+                $title = $faker->sentence(1);
             }
 
             $post = new Post();
             $post->user_id = rand(1, 2);
-            $post->caption = $caption;
+            $post->title = $title;
+            $post->description = $faker->paragraph(2);
             $post->content = $content;
-            $post->tags = [];
+            $post->hash_tags = $faker->randomElement([["HASH_1", "HASH_2"], ["HASH_1"], ["HASH_3", "HASH_4",], ["HASH_1", "HASH_4"]]);
+            $post->tags = $faker->randomElement([[3,4], [3], [4,5], [5]]);
             $post->type = $type;
             $post->save();
 
@@ -51,7 +53,7 @@ class PostTableSeeder extends Seeder
 
                     $comment_like_st = rand(0, 1);
                     if ($comment_like_st == 1) {
-                        for ($l = 0; $l < rand(0, 7); $j++) {
+                        for ($l = 0; $l < rand(0, 7); $l++) {
                             $c_like = new CommentLike();
                             $c_like->user_id = rand(1, 7);
                             $c_like->comment_id = $comment->id;

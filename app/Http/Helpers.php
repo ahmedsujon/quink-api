@@ -23,6 +23,11 @@ function api_user(){
     return Auth::guard('user-api')->user();
 }
 
+function short_time($created_at)
+{
+    $time = Carbon::parse($created_at)->shortRelativeToNowDiffForHumans();
+    return str_replace(' ago', '', $time);
+}
 
 function uploadFile($file, $folder)
 {

@@ -1,9 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\api\app\FollowController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\api\user\auth\AuthenticationController;
-use App\Http\Controllers\api\user\auth\UserResetPasswordController;
+use App\Http\Controllers\api\app\HomeController;
+use App\Http\Controllers\api\app\user\auth\AuthenticationController;
+use App\Http\Controllers\api\app\user\auth\UserResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,13 +20,28 @@ use App\Http\Controllers\api\user\auth\UserResetPasswordController;
 Route::post('v1/login', [AuthenticationController::class, 'login']);
 Route::post('v1/register', [AuthenticationController::class, 'register']);
 Route::post('v1/reset-password', [UserResetPasswordController::class, 'sendEmail']);
+Route::post('v1/validate-otp', [UserResetPasswordController::class, 'validateOtp']);
 Route::post('v1/change-password', [UserResetPasswordController::class, 'changePassword']);
 
-//Authenticated user
-Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/user'], function () {
-    Route::post('logout', [AuthenticationController::class, 'userLogout']);
+// Home Page Posts Random
+Route::get('v1/trending-photos', [HomeController::class, 'trendingPhotos']);
+Route::get('v1/trending-videos', [HomeController::class, 'trendingVideos']);
+Route::get('v1/trending-stories', [HomeController::class, 'trendingStories']);
 
-    //User Profile
-    Route::get('profile', [AuthenticationController::class, 'userProfile']);
+//Authenticated user
+Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/'], function () {
+    Route::post('user/logout', [AuthenticationController::class, 'userLogout']);
+
+    // Home Page Posts Following
+    Route::get('following-photos', [HomeController::class, 'followingPhotos']);
+    Route::get('following-videos', [HomeController::class, 'followingVideos']);
+    Route::get('following-stories', [HomeController::class, 'followingStories']);
+
+    // Follow Routes
+    Route::post('follow-unfollow', [FollowController::class, 'followUnFollow']);
+    Route::get('check-follow-status', [FollowController::class, 'followStatus']);
+
+    // User Profile
+    Route::get('user/profile', [AuthenticationController::class, 'userProfile']);
 });
 
