@@ -141,7 +141,7 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'views')->where('title', 'story', '%'. $search_term .'%')->where('type', 'photo')->orderBy('id', 'DESC')->paginate($pagination_value);
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'views')->where('title', 'like', '%'. $search_term .'%')->where('type', 'story')->orderBy('id', 'DESC')->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {

@@ -39,7 +39,7 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
 
     // Follow Routes
     Route::post('follow-unfollow', [FollowController::class, 'followUnFollow']);
-    Route::post('check-follow-status', [FollowController::class, 'followStatus']);
+    Route::get('check-follow-status', [FollowController::class, 'followStatus']);
 
     // User Profile
     Route::get('user/profile', [AuthenticationController::class, 'userProfile']);
