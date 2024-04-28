@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('caption')->nullable();
             $table->longText('content')->nullable();
             $table->longText('tags')->nullable();
-            $table->enum('type', ['photo', 'video', 'text'])->nullable();
+            $table->enum('type', ['photo', 'video', 'story'])->nullable();
             $table->integer('views')->default(0);
             $table->timestamps();
         });

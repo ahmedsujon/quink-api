@@ -19,7 +19,7 @@ class PostTableSeeder extends Seeder
         for ($i = 0; $i < 25; $i++) {
             $faker = Faker::create();
 
-            $type = $faker->randomElement(['photo', 'video', 'text']);
+            $type = $faker->randomElement(['photo', 'video', 'story']);
             if ($type == 'photo') {
                 $content = 'assets/images/post-img.jpg';
                 $caption = $faker->sentence(1);
@@ -27,7 +27,7 @@ class PostTableSeeder extends Seeder
                 $content = 'assets/videos/reel_' . $faker->randomElement(['a', 'b', 'c']) . '.mp4';
                 $caption = $faker->sentence(1);
             } else {
-                $content = $faker->paragraph;
+                $content = 'assets/images/post-img.jpg';
                 $caption = $faker->sentence(1);
             }
 
