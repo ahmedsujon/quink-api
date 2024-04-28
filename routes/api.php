@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\app\FollowController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\app\HomeController;
 use App\Http\Controllers\api\app\user\auth\AuthenticationController;
@@ -22,19 +23,25 @@ Route::post('v1/reset-password', [UserResetPasswordController::class, 'sendEmail
 Route::post('v1/validate-otp', [UserResetPasswordController::class, 'validateOtp']);
 Route::post('v1/change-password', [UserResetPasswordController::class, 'changePassword']);
 
+// Home Page Posts Random
 Route::get('v1/trending-photos', [HomeController::class, 'trendingPhotos']);
 Route::get('v1/trending-videos', [HomeController::class, 'trendingVideos']);
 Route::get('v1/trending-stories', [HomeController::class, 'trendingStories']);
 
 //Authenticated user
-Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1'], function () {
+Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/'], function () {
     Route::post('user/logout', [AuthenticationController::class, 'userLogout']);
 
-    Route::get('v1/following-photos', [HomeController::class, 'followingPhotos']);
-    Route::get('v1/following-videos', [HomeController::class, 'followingVideos']);
-    Route::get('v1/following-stories', [HomeController::class, 'followingStories']);
+    // Home Page Posts Following
+    Route::get('following-photos', [HomeController::class, 'followingPhotos']);
+    Route::get('following-videos', [HomeController::class, 'followingVideos']);
+    Route::get('following-stories', [HomeController::class, 'followingStories']);
 
-    //User Profile
+    // Follow Routes
+    Route::post('follow-unfollow', [FollowController::class, 'followUnFollow']);
+    Route::post('check-follow-status', [FollowController::class, 'followStatus']);
+
+    // User Profile
     Route::get('user/profile', [AuthenticationController::class, 'userProfile']);
 });
 

@@ -21,11 +21,11 @@ class JwtUserAuth extends BaseMiddleware
         try {
             $token_role = $this->auth->parseToken()->getClaim('role');
         } catch (JWTException $e) {
-            return response()->json(['result' => 'false', 'message' => 'Unauthorized'], 401);
+            return response()->json(['result' => false, 'message' => 'Unauthorized'], 401);
         }
 
         if ($token_role != 'user') {
-            return response()->json(['result' => 'false', 'message' => 'Unauthorized'], 401);
+            return response()->json(['result' => false, 'message' => 'Unauthorized'], 401);
         }
 
         return $next($request);
