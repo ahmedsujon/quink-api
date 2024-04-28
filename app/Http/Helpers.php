@@ -5,6 +5,7 @@ use App\Models\Food;
 use App\Models\Admin;
 use App\Models\Setting;
 use App\Models\Permission;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -27,6 +28,13 @@ function short_time($created_at)
 {
     $time = Carbon::parse($created_at)->shortRelativeToNowDiffForHumans();
     return str_replace(' ago', '', $time);
+}
+
+function post_owner_info($user_id)
+{
+    $user = DB::table('users')->select('name', 'avatar')->find($user_id);
+    $user->avatar = url('/') . '/'. $user->avatar;
+    return $user;
 }
 
 function uploadFile($file, $folder)
