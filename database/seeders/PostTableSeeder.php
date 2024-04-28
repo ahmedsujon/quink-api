@@ -51,7 +51,7 @@ class PostTableSeeder extends Seeder
 
                     $comment_like_st = rand(0, 1);
                     if ($comment_like_st == 1) {
-                        for ($l = 0; $l < rand(0, 7); $j++) {
+                        for ($l = 0; $l < rand(0, 7); $l++) {
                             $c_like = new CommentLike();
                             $c_like->user_id = rand(1, 7);
                             $c_like->comment_id = $comment->id;

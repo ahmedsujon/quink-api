@@ -1,10 +1,9 @@
 <?php
 
-use App\Http\Controllers\api\app\HomeController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\api\user\auth\AuthenticationController;
-use App\Http\Controllers\api\user\auth\UserResetPasswordController;
+use App\Http\Controllers\api\app\HomeController;
+use App\Http\Controllers\api\app\user\auth\AuthenticationController;
+use App\Http\Controllers\api\app\user\auth\UserResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
