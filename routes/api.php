@@ -27,10 +27,14 @@ Route::get('v1/trending-videos', [HomeController::class, 'trendingVideos']);
 Route::get('v1/trending-stories', [HomeController::class, 'trendingStories']);
 
 //Authenticated user
-Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/user'], function () {
-    Route::post('logout', [AuthenticationController::class, 'userLogout']);
+Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1'], function () {
+    Route::post('user/logout', [AuthenticationController::class, 'userLogout']);
+
+    Route::get('v1/following-photos', [HomeController::class, 'followingPhotos']);
+    Route::get('v1/following-videos', [HomeController::class, 'followingVideos']);
+    Route::get('v1/following-stories', [HomeController::class, 'followingStories']);
 
     //User Profile
-    Route::get('profile', [AuthenticationController::class, 'userProfile']);
+    Route::get('user/profile', [AuthenticationController::class, 'userProfile']);
 });
 
