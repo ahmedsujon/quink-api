@@ -20,6 +20,7 @@ use App\Http\Controllers\api\user\auth\UserResetPasswordController;
 Route::post('v1/login', [AuthenticationController::class, 'login']);
 Route::post('v1/register', [AuthenticationController::class, 'register']);
 Route::post('v1/reset-password', [UserResetPasswordController::class, 'sendEmail']);
+Route::post('v1/validate-otp', [UserResetPasswordController::class, 'validateOtp']);
 Route::post('v1/change-password', [UserResetPasswordController::class, 'changePassword']);
 
 Route::get('v1/trending-posts', [HomeController::class, 'trendingPosts']);
