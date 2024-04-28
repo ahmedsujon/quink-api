@@ -37,7 +37,7 @@ class PostTableSeeder extends Seeder
             $post->description = $faker->paragraph(2);
             $post->content = $content;
             $post->hash_tags = $faker->randomElement([["HASH_1", "HASH_2"], ["HASH_1"], ["HASH_3", "HASH_4",], ["HASH_1", "HASH_4"]]);
-            $post->tags = $faker->randomElement([['3', '4'], ['3'], ['4','5'], ['5']]);
+            $post->tags = $faker->randomElement([[3,4], [3], [4,5], [5]]);
             $post->type = $type;
             $post->save();
 
