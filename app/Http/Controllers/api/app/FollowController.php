@@ -22,11 +22,11 @@ class FollowController extends Controller
         }
 
         try {
-            $getFollow = Follower::where('user_id', api_user()->id)->where('follower_id', $request->user_id)->first();
+            $getFollow = Follower::where('user_id', $request->user_id)->where('follower_id', api_user()->id)->first();
             if (!$getFollow) {
                 $follow = new Follower();
-                $follow->user_id = api_user()->id;
-                $follow->follower_id = $request->user_id;
+                $follow->user_id = $request->user_id;
+                $follow->follower_id = api_user()->id;
                 $follow->save();
 
                 return response()->json(['status' => true, 'message' => 'Follow Success']);
@@ -52,7 +52,7 @@ class FollowController extends Controller
         }
 
         try {
-            $getFollow = Follower::where('user_id', api_user()->id)->where('follower_id', $request->user_id)->first();
+            $getFollow = Follower::where('user_id', $request->user_id)->where('follower_id', api_user()->id)->first();
             if (!$getFollow) {
                 return response()->json(['status' => false, 'message' => 'Not Following']);
             } else {

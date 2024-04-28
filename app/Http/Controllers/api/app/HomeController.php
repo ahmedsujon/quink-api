@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\CommentLike;
+use App\Models\Follower;
 use App\Models\Like;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -203,7 +204,9 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'views')->where('title', 'like', '%'. $search_term .'%')->where('type', 'photo')->orderBy('id', 'DESC')->paginate($pagination_value);
+            $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
+
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'views')->where('title', 'like', '%'. $search_term .'%')->where('type', 'photo')->orderBy('id', 'DESC')->whereIn('user_id', $myFollowing)->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
@@ -263,7 +266,9 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'views')->where('title', 'like', '%'. $search_term .'%')->where('type', 'video')->orderBy('id', 'DESC')->paginate($pagination_value);
+            $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
+
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'views')->where('title', 'like', '%'. $search_term .'%')->where('type', 'video')->orderBy('id', 'DESC')->whereIn('user_id', $myFollowing)->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
@@ -323,7 +328,9 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'views')->where('title', 'like', '%'. $search_term .'%')->where('type', 'story')->orderBy('id', 'DESC')->paginate($pagination_value);
+            $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
+
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'views')->where('title', 'like', '%'. $search_term .'%')->where('type', 'story')->orderBy('id', 'DESC')->whereIn('user_id', $myFollowing)->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
