@@ -3,6 +3,7 @@
 use App\Http\Controllers\api\app\FollowController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\app\HomeController;
+use App\Http\Controllers\api\app\LikeController;
 use App\Http\Controllers\api\app\user\auth\AuthenticationController;
 use App\Http\Controllers\api\app\user\auth\UserResetPasswordController;
 
@@ -40,6 +41,10 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
     // Follow Routes
     Route::post('follow-unfollow', [FollowController::class, 'followUnFollow']);
     Route::get('check-follow-status', [FollowController::class, 'followStatus']);
+
+    // Post Like Routes
+    Route::post('post-like-unlike', [LikeController::class, 'likeUnlike']);
+    Route::get('check-post-like-status', [LikeController::class, 'likeStatus']);
 
     // User Profile
     Route::get('user/profile', [AuthenticationController::class, 'userProfile']);
