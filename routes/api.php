@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\app\BookmarkController;
 use App\Http\Controllers\api\app\CommentController;
 use App\Http\Controllers\api\app\FollowController;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,10 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
     Route::post('delete-comment', [CommentController::class, 'deleteComment']);
     Route::post('comment-like-unlike', [CommentController::class, 'likeUnlike']);
     Route::get('check-comment-like-status', [CommentController::class, 'likeStatus']);
+
+    // Bookmark Routes
+    Route::post('add-to-bookmark', [BookmarkController::class, 'addToBookmark']);
+    Route::get('check-bookmark-status', [BookmarkController::class, 'bookmarkStatus']);
 
     // User Profile
     Route::get('user/profile', [AuthenticationController::class, 'userProfile']);
