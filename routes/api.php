@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\app\CommentController;
 use App\Http\Controllers\api\app\FollowController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\app\HomeController;
@@ -45,6 +46,11 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
     // Post Like Routes
     Route::post('post-like-unlike', [LikeController::class, 'likeUnlike']);
     Route::get('check-post-like-status', [LikeController::class, 'likeStatus']);
+
+    // Comment Routes
+    Route::post('add-comment', [CommentController::class, 'addComment']);
+    Route::post('comment-like-unlike', [CommentController::class, 'likeUnlike']);
+    Route::get('check-comment-like-status', [CommentController::class, 'likeStatus']);
 
     // User Profile
     Route::get('user/profile', [AuthenticationController::class, 'userProfile']);
