@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('post_id')->nullable();
             $table->unsignedBigInteger('comment_id')->nullable();
-            $table->longText('notification')->nullable();
+            $table->longText('notification_text')->nullable();
             $table->string('type')->nullable();
             $table->timestamps();
         });
