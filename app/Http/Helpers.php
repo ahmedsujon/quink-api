@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use App\Models\Food;
 use App\Models\Admin;
+use App\Models\Notification;
 use App\Models\Setting;
 use App\Models\Permission;
 use Illuminate\Support\Facades\DB;
@@ -35,6 +36,22 @@ function post_owner_info($user_id)
     $user = DB::table('users')->select('name', 'avatar')->find($user_id);
     $user->avatar = url('/') . '/'. $user->avatar;
     return $user;
+}
+
+function notification($for, $user_id, $notification_text, $type, $post_id = NULL, $comment_id = NULL)
+{
+    if ($type == 'follow') {
+        Notification::where('type', 'follow')->where('user_id', $user_id)->where('notification_for', $for)->delete();
+    }
+
+    $notification = new Notification();
+    $notification->notification_for = $for;
+    $notification->user_id = $user_id;
+    $notification->post_id = $post_id;
+    $notification->comment_id = $comment_id;
+    $notification->notification_text = $notification_text;
+    $notification->type = $type;
+    $notification->save();
 }
 
 function uploadFile($file, $folder)

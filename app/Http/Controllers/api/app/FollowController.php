@@ -29,6 +29,8 @@ class FollowController extends Controller
                 $follow->follower_id = api_user()->id;
                 $follow->save();
 
+                notification($request->user_id, api_user()->id, 'started following you.', 'follow', NULL, NULL);
+
                 return response()->json(['status' => true, 'message' => 'Follow Success']);
             } else {
                 $getFollow->delete();

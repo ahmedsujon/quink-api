@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\api\app\BookmarkController;
+use App\Http\Controllers\api\app\CommentController;
 use App\Http\Controllers\api\app\FollowController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\app\HomeController;
+use App\Http\Controllers\api\app\LikeController;
+use App\Http\Controllers\api\app\NotificationController;
 use App\Http\Controllers\api\app\user\auth\AuthenticationController;
 use App\Http\Controllers\api\app\user\auth\UserResetPasswordController;
 
@@ -40,6 +44,23 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
     // Follow Routes
     Route::post('follow-unfollow', [FollowController::class, 'followUnFollow']);
     Route::get('check-follow-status', [FollowController::class, 'followStatus']);
+
+    // Post Like Routes
+    Route::post('post-like-unlike', [LikeController::class, 'likeUnlike']);
+    Route::get('check-post-like-status', [LikeController::class, 'likeStatus']);
+
+    // Comment Routes
+    Route::post('add-comment', [CommentController::class, 'addComment']);
+    Route::post('delete-comment', [CommentController::class, 'deleteComment']);
+    Route::post('comment-like-unlike', [CommentController::class, 'likeUnlike']);
+    Route::get('check-comment-like-status', [CommentController::class, 'likeStatus']);
+
+    // Bookmark Routes
+    Route::post('add-to-bookmark', [BookmarkController::class, 'addToBookmark']);
+    Route::get('check-bookmark-status', [BookmarkController::class, 'bookmarkStatus']);
+
+    // Notification Routes
+    Route::get('user/notifications', [NotificationController::class, 'notifications']);
 
     // User Profile
     Route::get('user/profile', [AuthenticationController::class, 'userProfile']);
