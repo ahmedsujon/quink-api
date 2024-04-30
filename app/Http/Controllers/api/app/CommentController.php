@@ -44,6 +44,31 @@ class CommentController extends Controller
         }
     }
 
+    public function deleteComment(Request $request)
+    {
+        //Validation
+        $rules = [
+            'comment_id' => 'required',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $getComment = Comment::find($request->comment_id);
+            if ($getComment) {
+                Comment::where('parent_id', $request->comment_id)->delete();
+                $getComment->delete();
+                return response()->json(['status' => true, 'message' => 'Comment deleted successfully']);
+            } else {
+                return response()->json(['status' => false, 'message' => 'Comment not found!']);
+            }
+        } catch (Exception $ex) {
+            return response($ex->getMessage());
+        }
+    }
+
     public function LikeUnlike(Request $request)
     {
         //Validation

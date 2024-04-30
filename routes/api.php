@@ -49,6 +49,7 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
 
     // Comment Routes
     Route::post('add-comment', [CommentController::class, 'addComment']);
+    Route::post('delete-comment', [CommentController::class, 'deleteComment']);
     Route::post('comment-like-unlike', [CommentController::class, 'likeUnlike']);
     Route::get('check-comment-like-status', [CommentController::class, 'likeStatus']);
 
