@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\api\app;
 
 use Exception;
+use App\Models\Post;
+use App\Models\Bookmark;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Bookmark;
 use Illuminate\Support\Facades\Validator;
 
 class BookmarkController extends Controller
@@ -23,6 +24,8 @@ class BookmarkController extends Controller
         }
 
         try {
+            $post = Post::find($request->post_id);
+
             $getBookmark = Bookmark::where('user_id', api_user()->id)->where('post_id', $request->post_id)->first();
             if (!$getBookmark) {
                 $bookmark = new Bookmark();
@@ -30,6 +33,8 @@ class BookmarkController extends Controller
                 $bookmark->post_id = $request->post_id;
                 $bookmark->post_type = $request->post_type;
                 $bookmark->save();
+
+                notification($post->user_id, api_user()->id, 'bookmarked your post.', 'bookmark', $request->post_id, NULL);
 
                 return response()->json(['status' => true, 'message' => 'Bookmark Added']);
             } else {
