@@ -35,6 +35,15 @@ class CommentController extends Controller
                 $comment->status = 1;
                 $comment->save();
 
+                if ($request->comment_id) {
+                    notification($getPost->user_id, api_user()->id, 'commented on your post.', 'comment', $request->post_id, $request->comment_id);
+
+                    $get_comment = Comment::find($request->comment_id);
+                    notification($get_comment->user_id, api_user()->id, 'replied on your comment.', 'comment_reply', $request->post_id, $request->comment_id);
+                } else {
+                    notification($getPost->user_id, api_user()->id, 'commented on your post.', 'comment', $request->post_id, NULL);
+                }
+
                 return response()->json(['status' => true, 'message' => 'Comment added successfully']);
             } else {
                 return response()->json(['status' => false, 'message' => 'Something went wrong!']);

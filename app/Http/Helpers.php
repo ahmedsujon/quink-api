@@ -46,15 +46,24 @@ function notification($for, $user_id, $notification_text, $type, $post_id = NULL
     if ($type == 'like') {
         Notification::where('type', 'like')->where('user_id', $user_id)->where('notification_for', $for)->delete();
     }
+    if ($type == 'comment') {
+        Notification::where('type', 'comment')->where('user_id', $user_id)->where('notification_for', $for)->delete();
+    }
+    if ($type == 'comment_reply') {
+        Notification::where('type', 'comment_reply')->where('user_id', $user_id)->where('notification_for', $for)->delete();
+    }
 
-    $notification = new Notification();
-    $notification->notification_for = $for;
-    $notification->user_id = $user_id;
-    $notification->post_id = $post_id;
-    $notification->comment_id = $comment_id;
-    $notification->notification_text = $notification_text;
-    $notification->type = $type;
-    $notification->save();
+    if ($for != $user_id) {
+        $notification = new Notification();
+        $notification->notification_for = $for;
+        $notification->user_id = $user_id;
+        $notification->post_id = $post_id;
+        $notification->comment_id = $comment_id;
+        $notification->notification_text = $notification_text;
+        $notification->type = $type;
+        $notification->save();
+    }
+
 }
 
 function uploadFile($file, $folder)

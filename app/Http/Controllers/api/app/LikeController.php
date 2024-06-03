@@ -32,7 +32,7 @@ class LikeController extends Controller
                 $like->post_id = $request->post_id;
                 $like->save();
 
-                notification($post->user_id, api_user()->id, 'Likes your post.', 'like', $request->post_id, NULL);
+                notification($post->user_id, api_user()->id, 'liked your post.', 'like', $request->post_id, NULL);
 
                 return response()->json(['status' => true, 'message' => 'Like Success']);
             } else {
