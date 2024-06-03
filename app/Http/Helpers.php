@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\Notification;
 use App\Models\Setting;
 use App\Models\Permission;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,6 +24,11 @@ function getAdminByID($id)
 // Api
 function api_user(){
     return Auth::guard('user-api')->user();
+}
+
+function getUserByID($user_id){
+    $user = User::find($user_id);
+    return $user;
 }
 
 function short_time($created_at)

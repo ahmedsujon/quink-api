@@ -26,7 +26,7 @@ class UserTableSeeder extends Seeder
 
             if (!$getUser) {
                 $user = new User();
-                $user->name = $name;
+                $user->name = ucwords($name);
                 $user->username = 'user' . rand(10, 99);
                 $user->email = $email;
                 $user->password = Hash::make('12345678');
