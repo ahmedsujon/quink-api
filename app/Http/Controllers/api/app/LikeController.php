@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Like;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Post;
 use Illuminate\Support\Facades\Validator;
 
 class LikeController extends Controller
@@ -22,12 +23,16 @@ class LikeController extends Controller
         }
 
         try {
+            $post = Post::find($request->post_id);
+
             $getLike = Like::where('user_id', api_user()->id)->where('post_id', $request->post_id)->first();
             if (!$getLike) {
                 $like = new Like();
                 $like->user_id = api_user()->id;
                 $like->post_id = $request->post_id;
                 $like->save();
+
+                notification($post->user_id, api_user()->id, 'liked your post.', 'like', $request->post_id, NULL);
 
                 return response()->json(['status' => true, 'message' => 'Like Success']);
             } else {

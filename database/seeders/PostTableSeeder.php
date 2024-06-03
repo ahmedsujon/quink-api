@@ -32,7 +32,7 @@ class PostTableSeeder extends Seeder
             }
 
             $post = new Post();
-            $post->user_id = rand(1, 2);
+            $post->user_id = $i == 2 ? 1 : rand(1, 2);
             $post->title = $title;
             $post->description = $faker->paragraph(2);
             $post->content = $content;
@@ -79,7 +79,7 @@ class PostTableSeeder extends Seeder
 
             $like_st = rand(0, 1);
             if ($like_st == 1) {
-                for ($l = 0; $l < rand(0, 7); $j++) {
+                for ($m = 0; $m < rand(0, 7); $m++) {
                     $like = new Like();
                     $like->user_id = rand(1, 7);
                     $like->post_id = $post->id;
