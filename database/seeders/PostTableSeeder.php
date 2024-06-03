@@ -32,7 +32,7 @@ class PostTableSeeder extends Seeder
             }
 
             $post = new Post();
-            $post->user_id = rand(1, 2);
+            $post->user_id = $i == 1 ? 2 : rand(1, 2);
             $post->title = $title;
             $post->description = $faker->paragraph(2);
             $post->content = $content;

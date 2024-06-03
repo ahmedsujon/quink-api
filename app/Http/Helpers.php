@@ -43,6 +43,9 @@ function notification($for, $user_id, $notification_text, $type, $post_id = NULL
     if ($type == 'follow') {
         Notification::where('type', 'follow')->where('user_id', $user_id)->where('notification_for', $for)->delete();
     }
+    if ($type == 'like') {
+        Notification::where('type', 'like')->where('user_id', $user_id)->where('notification_for', $for)->delete();
+    }
 
     $notification = new Notification();
     $notification->notification_for = $for;
