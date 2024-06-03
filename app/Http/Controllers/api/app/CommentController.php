@@ -90,12 +90,16 @@ class CommentController extends Controller
         }
 
         try {
+            $getComment = Comment::find($request->comment_id);
+
             $getLike = CommentLike::where('user_id', api_user()->id)->where('comment_id', $request->comment_id)->first();
             if (!$getLike) {
                 $like = new CommentLike();
                 $like->user_id = api_user()->id;
                 $like->comment_id = $request->comment_id;
                 $like->save();
+
+                notification($getComment->user_id, api_user()->id, 'likes your comment.', 'comment_like', $getComment->post_id, $request->comment_id);
 
                 return response()->json(['status' => true, 'message' => 'Like Success']);
             } else {
