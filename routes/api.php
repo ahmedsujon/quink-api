@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\app\HomeController;
 use App\Http\Controllers\api\app\LikeController;
 use App\Http\Controllers\api\app\NotificationController;
+use App\Http\Controllers\api\app\ProfileController;
 use App\Http\Controllers\api\app\user\auth\AuthenticationController;
 use App\Http\Controllers\api\app\user\auth\UserResetPasswordController;
 
@@ -61,6 +62,11 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
 
     // Notification Routes
     Route::get('user/notifications', [NotificationController::class, 'notifications']);
+
+    // Profile Routes
+    Route::get('user/my-profile', [ProfileController::class, 'myProfile']);
+    Route::post('user/my-profile/update', [ProfileController::class, 'updateMyProfile']);
+    Route::get('user-profile', [ProfileController::class, 'userProfile']);
 
     // User Profile
     Route::get('user/profile', [AuthenticationController::class, 'userProfile']);
