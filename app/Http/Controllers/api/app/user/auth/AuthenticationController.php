@@ -12,6 +12,7 @@ use App\Models\UserMeasurement;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class AuthenticationController extends Controller
@@ -46,6 +47,7 @@ class AuthenticationController extends Controller
             $user->save();
 
             if ($user) {
+                $this->send($user->email);
                 $ttl = 43200;
                 $credentials = $request->only('email', 'password');
                 if ($token = $this->guard()->attempt($credentials)) {
@@ -57,6 +59,54 @@ class AuthenticationController extends Controller
         } catch (Exception $ex) {
             return response($ex->getMessage());
         }
+    }
+
+    public function send($email)
+    {
+        $otp = rand(1000, 9999);
+
+        $user = User::where('email', $email)->first();
+        $user->verification_code = $otp;
+        $user->save();
+
+        $data['email'] = $email;
+        $data['otp'] = $otp;
+
+        Mail::send('emails.api.email-verification', $data, function ($message) use ($data) {
+            $message->to($data['email'])
+                ->subject('Email Verification');
+        });
+    }
+
+    public function verifyEmail(Request $request)
+    {
+        //Validation
+        $rules = [
+            'code' => 'required',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $user = User::where('id', api_user()->id)->first();
+        if ($user->verification_code == $request->code) {
+            $user->email_verified_at = now();
+            $user->verification_code = NULL;
+            $user->save();
+
+            return response()->json(['status' => true, 'message' => 'Email verified successfully']);
+        } else {
+            return response()->json(['status' => false, 'message' => 'Incorrect code']);
+        }
+
+    }
+
+    public function resendCode(Request $request)
+    {
+        $this->send(api_user()->email);
+
+        return response()->json(['status' => true, 'message' => 'Verification code sent to your email']);
     }
 
     public function login(Request $request)

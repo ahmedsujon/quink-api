@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('website', 2000)->nullable();
             $table->text('location')->nullable();
             $table->longText('bio')->nullable();
+            $table->string('verification_code')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

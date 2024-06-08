@@ -70,5 +70,9 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
 
     // User Profile
     Route::get('user/profile', [AuthenticationController::class, 'userProfile']);
+
+    // Email Verification
+    Route::post('user/verify-email', [AuthenticationController::class, 'verifyEmail']);
+    Route::post('user/resend-verification-code', [AuthenticationController::class, 'resendCode']);
 });
 
