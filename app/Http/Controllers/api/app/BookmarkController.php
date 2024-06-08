@@ -68,4 +68,26 @@ class BookmarkController extends Controller
             return response($ex->getMessage());
         }
     }
+
+    public function myBookmarks(Request $request)
+    {
+        try {
+            $pMarks = Bookmark::where('user_id', api_user()->id)->where('post_type', 'photo')->get();
+            $vMarks = Bookmark::where('user_id', api_user()->id)->where('post_type', 'video')->get();
+
+            $bookmarks = [];
+
+            $bookmarks['photos'] = [
+                'total' => $pMarks->count(),
+                'data' => $pMarks,
+            ];
+            $bookmarks['videos'] = [
+                'total' => $vMarks->count(),
+                'data' => $vMarks,
+            ];
+            return response()->json($bookmarks);
+        } catch (Exception $ex) {
+            return response($ex->getMessage());
+        }
+    }
 }

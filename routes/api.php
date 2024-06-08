@@ -59,6 +59,7 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
     // Bookmark Routes
     Route::post('add-to-bookmark', [BookmarkController::class, 'addToBookmark']);
     Route::get('check-bookmark-status', [BookmarkController::class, 'bookmarkStatus']);
+    Route::get('my-bookmarks', [BookmarkController::class, 'myBookmarks']);
 
     // Notification Routes
     Route::get('user/notifications', [NotificationController::class, 'notifications']);
