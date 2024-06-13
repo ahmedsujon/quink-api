@@ -26,7 +26,7 @@ class ProfileController extends Controller
                 $data['user_name'] = $user->username;
                 $data['member_since'] = Carbon::parse($user->created_at)->format('M d, Y');
                 $data['profile_image'] = $user->avatar ? url('/').'/'.$user->avatar : 'assets/images/placeholder.jpg';
-                $data['website'] = $user->website;
+                $data['websites'] = $user->websites;
                 $data['location'] = $user->location;
                 $data['bio'] = $user->bio;
                 $data['followers'] = Follower::where('user_id', api_user()->id)->count();
