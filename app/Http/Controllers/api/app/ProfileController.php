@@ -99,7 +99,7 @@ class ProfileController extends Controller
         $rules = [
             'name' => 'required',
             'user_name' => 'required',
-            'website' => 'required',
+            'websites' => 'required',
             'location' => 'required',
             'bio' => 'required',
         ];
@@ -112,7 +112,7 @@ class ProfileController extends Controller
             $user = User::where('id', api_user()->id)->first();
             $user->name = $request->name;
             $user->username = $request->user_name;
-            $user->website = $request->website;
+            $user->websites = $request->websites;
             $user->location = $request->location;
             $user->bio = $request->bio;
 
