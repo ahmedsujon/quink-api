@@ -55,6 +55,6 @@ class User extends Authenticatable implements JWTSubject
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
         'password' => 'hashed',
-        'measurements' => 'array',
+        'websites' => 'array',
     ];
 }

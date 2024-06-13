@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\api\app;
 
-use Exception;
-use Carbon\Carbon;
-use App\Models\User;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Follower;
 use App\Models\Like;
 use App\Models\Post;
+use App\Models\User;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
@@ -25,8 +25,8 @@ class ProfileController extends Controller
                 $data['name'] = $user->name;
                 $data['user_name'] = $user->username;
                 $data['member_since'] = Carbon::parse($user->created_at)->format('M d, Y');
-                $data['profile_image'] = $user->avatar ? url('/').'/'.$user->avatar : 'assets/images/placeholder.jpg';
-                $data['website'] = $user->website;
+                $data['profile_image'] = $user->avatar ? url('/') . '/' . $user->avatar : 'assets/images/placeholder.jpg';
+                $data['websites'] = $user->websites;
                 $data['location'] = $user->location;
                 $data['bio'] = $user->bio;
                 $data['followers'] = Follower::where('user_id', api_user()->id)->count();
@@ -34,38 +34,66 @@ class ProfileController extends Controller
                 $data['posts'] = Post::where('user_id', api_user()->id)->count();
                 $data['likes'] = Like::join('posts', 'likes.post_id', 'posts.id')->where('posts.user_id', api_user()->id)->count();
 
-                $photos = Post::select('id', 'title', 'content')->where('type', 'photo')->orderBy('id', 'DESC')->get();
-                foreach ($photos as $key => $pt) {
-                    $pt->content = url('/').'/'.$pt->content;
-                }
-                $data['photos'] = [
-                    'total' => $photos->count(),
-                    'data' => $photos,
-                ];
-
-                $videos = Post::select('id', 'title', 'content')->where('type', 'video')->orderBy('id', 'DESC')->get();
-                foreach ($videos as $key => $vdo) {
-                    $vdo->content = url('/').'/'.$vdo->content;
-                }
-                $data['videos'] = [
-                    'total' => $videos->count(),
-                    'data' => $videos,
-                ];
-
-                $stories = Post::select('id', 'title', 'content')->where('type', 'story')->orderBy('id', 'DESC')->get();
-                foreach ($stories as $key => $story) {
-                    $story->content = url('/').'/'.$story->content;
-                }
-                $data['stories'] = [
-                    'total' => $stories->count(),
-                    'data' => $stories,
-                ];
-
-                return response()->json($data);
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Data retrieve successfully',
+                    'data' => $data,
+                ]);
             }
         } catch (Exception $ex) {
             return response($ex->getMessage());
         }
+    }
+
+    public function myPhotos(Request $request)
+    {
+        $paginationValue = $request->per_page ?? 10;
+
+        $photos = Post::select('id', 'title', 'content')->where('type', 'photo')->orderBy('id', 'DESC')->paginate($paginationValue);
+        foreach ($photos as $key => $pt) {
+            $pt->content = url('/') . '/' . $pt->content;
+        }
+
+        return response()->json([
+            'status_code' => 200,
+            'message' => 'Data retrieve successfully',
+            'data' => $photos,
+        ]);
+
+    }
+
+    public function myVideos(Request $request)
+    {
+        $paginationValue = $request->per_page ?? 10;
+
+        $videos = Post::select('id', 'title', 'content')->where('type', 'video')->orderBy('id', 'DESC')->paginate($paginationValue);
+        foreach ($videos as $key => $pt) {
+            $pt->content = url('/') . '/' . $pt->content;
+        }
+
+        return response()->json([
+            'status_code' => 200,
+            'message' => 'Data retrieve successfully',
+            'data' => $videos,
+        ]);
+
+    }
+
+    public function myStories(Request $request)
+    {
+        $paginationValue = $request->per_page ?? 10;
+
+        $stories = Post::select('id', 'title', 'content')->where('type', 'story')->orderBy('id', 'DESC')->paginate($paginationValue);
+        foreach ($stories as $key => $pt) {
+            $pt->content = url('/') . '/' . $pt->content;
+        }
+
+        return response()->json([
+            'status_code' => 200,
+            'message' => 'Data retrieve successfully',
+            'data' => $stories,
+        ]);
+
     }
 
     public function updateMyProfile(Request $request)
@@ -74,7 +102,7 @@ class ProfileController extends Controller
         $rules = [
             'name' => 'required',
             'user_name' => 'required',
-            'website' => 'required',
+            'websites' => 'required',
             'location' => 'required',
             'bio' => 'required',
         ];
@@ -87,7 +115,7 @@ class ProfileController extends Controller
             $user = User::where('id', api_user()->id)->first();
             $user->name = $request->name;
             $user->username = $request->user_name;
-            $user->website = $request->website;
+            $user->websites = $request->websites;
             $user->location = $request->location;
             $user->bio = $request->bio;
 
@@ -98,7 +126,11 @@ class ProfileController extends Controller
 
             $user->save();
 
-            return response()->json(['status' => true, 'message' => 'Profile updated successfully']);
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'Profile updated successfully',
+                'data' => [],
+            ]);
         } catch (Exception $ex) {
             return response($ex->getMessage());
         }
@@ -124,8 +156,8 @@ class ProfileController extends Controller
                 $data['name'] = $user->name;
                 $data['user_name'] = $user->username;
                 $data['member_since'] = Carbon::parse($user->created_at)->format('M d, Y');
-                $data['profile_image'] = $user->avatar ? url('/').'/'.$user->avatar : 'assets/images/placeholder.jpg';
-                $data['website'] = $user->website;
+                $data['profile_image'] = $user->avatar ? url('/') . '/' . $user->avatar : 'assets/images/placeholder.jpg';
+                $data['websites'] = $user->websites;
                 $data['location'] = $user->location;
                 $data['bio'] = $user->bio;
                 $data['followers'] = Follower::where('user_id', api_user()->id)->count();
@@ -133,28 +165,44 @@ class ProfileController extends Controller
                 $data['posts'] = Post::where('user_id', api_user()->id)->count();
                 $data['likes'] = Like::join('posts', 'likes.post_id', 'posts.id')->where('posts.user_id', api_user()->id)->count();
 
-                $photos = Post::select('id', 'title', 'content')->where('type', 'photo')->orderBy('id', 'DESC')->get();
-                foreach ($photos as $key => $pt) {
-                    $pt->content = url('/').'/'.$pt->content;
-                }
-                $data['photos'] = [
-                    'total' => $photos->count(),
-                    'data' => $photos,
-                ];
-
-                $videos = Post::select('id', 'title', 'content')->where('type', 'video')->orderBy('id', 'DESC')->get();
-                foreach ($videos as $key => $vdo) {
-                    $vdo->content = url('/').'/'.$vdo->content;
-                }
-                $data['videos'] = [
-                    'total' => $videos->count(),
-                    'data' => $videos,
-                ];
-
                 return response()->json($data);
             }
         } catch (Exception $ex) {
             return response($ex->getMessage());
         }
+    }
+
+    public function userPhotos(Request $request)
+    {
+        $paginationValue = $request->per_page ?? 10;
+
+        $photos = Post::select('id', 'title', 'content')->where('user_id', $request->user_id)->where('type', 'photo')->orderBy('id', 'DESC')->paginate($paginationValue);
+        foreach ($photos as $key => $pt) {
+            $pt->content = url('/') . '/' . $pt->content;
+        }
+
+        return response()->json([
+            'status_code' => 200,
+            'message' => 'Data retrieve successfully',
+            'data' => $photos,
+        ]);
+
+    }
+
+    public function userVideos(Request $request)
+    {
+        $paginationValue = $request->per_page ?? 10;
+
+        $videos = Post::select('id', 'title', 'content')->where('user_id', $request->user_id)->where('type', 'video')->orderBy('id', 'DESC')->paginate($paginationValue);
+        foreach ($videos as $key => $pt) {
+            $pt->content = url('/') . '/' . $pt->content;
+        }
+
+        return response()->json([
+            'status_code' => 200,
+            'message' => 'Data retrieve successfully',
+            'data' => $videos,
+        ]);
+
     }
 }
