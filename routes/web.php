@@ -1,9 +1,7 @@
 <?php
 
-use App\Livewire\App\Contact\ContactComponent;
-use App\Livewire\App\Pages\PrivacyPolicyComponent;
-use App\Livewire\App\Pages\TermsConditionComponent;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\auth\SocialiteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [SocialiteController::class, 'getGoogleTokenFromWeb']);
 
 Route::get('/', function () {
     return redirect()->route('admin.login');
