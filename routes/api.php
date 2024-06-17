@@ -33,6 +33,8 @@ Route::get('v1/trending-photos', [HomeController::class, 'trendingPhotos']);
 Route::get('v1/trending-videos', [HomeController::class, 'trendingVideos']);
 Route::get('v1/trending-stories', [HomeController::class, 'trendingStories']);
 
+Route::post('v1/login/google', [AuthenticationController::class, 'loginWithGoogle']);
+
 //Authenticated user
 Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/'], function () {
     Route::post('user/logout', [AuthenticationController::class, 'userLogout']);

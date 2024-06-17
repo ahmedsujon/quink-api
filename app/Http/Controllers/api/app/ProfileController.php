@@ -33,6 +33,8 @@ class ProfileController extends Controller
                 $data['following'] = Follower::where('follower_id', api_user()->id)->count();
                 $data['posts'] = Post::where('user_id', api_user()->id)->count();
                 $data['likes'] = Like::join('posts', 'likes.post_id', 'posts.id')->where('posts.user_id', api_user()->id)->count();
+                $data['total_photos'] = Post::select('id')->where('user_id', api_user()->id)->where('type', 'photo')->count();
+                $data['total_videos'] = Post::select('id')->where('user_id', api_user()->id)->where('type', 'video')->count();
 
                 return response()->json([
                     'status_code' => 200,
@@ -49,7 +51,7 @@ class ProfileController extends Controller
     {
         $paginationValue = $request->per_page ?? 10;
 
-        $photos = Post::select('id', 'title', 'content')->where('type', 'photo')->orderBy('id', 'DESC')->paginate($paginationValue);
+        $photos = Post::select('id', 'title', 'content')->where('user_id', api_user()->id)->where('type', 'photo')->orderBy('id', 'DESC')->paginate($paginationValue);
         foreach ($photos as $key => $pt) {
             $pt->content = url('/') . '/' . $pt->content;
         }
@@ -66,7 +68,7 @@ class ProfileController extends Controller
     {
         $paginationValue = $request->per_page ?? 10;
 
-        $videos = Post::select('id', 'title', 'content')->where('type', 'video')->orderBy('id', 'DESC')->paginate($paginationValue);
+        $videos = Post::select('id', 'title', 'content')->where('user_id', api_user()->id)->where('type', 'video')->orderBy('id', 'DESC')->paginate($paginationValue);
         foreach ($videos as $key => $pt) {
             $pt->content = url('/') . '/' . $pt->content;
         }
@@ -83,7 +85,7 @@ class ProfileController extends Controller
     {
         $paginationValue = $request->per_page ?? 10;
 
-        $stories = Post::select('id', 'title', 'content')->where('type', 'story')->orderBy('id', 'DESC')->paginate($paginationValue);
+        $stories = Post::select('id', 'title', 'content')->where('user_id', api_user()->id)->where('type', 'story')->orderBy('id', 'DESC')->paginate($paginationValue);
         foreach ($stories as $key => $pt) {
             $pt->content = url('/') . '/' . $pt->content;
         }
