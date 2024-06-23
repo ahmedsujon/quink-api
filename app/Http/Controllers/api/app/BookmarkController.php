@@ -73,7 +73,16 @@ class BookmarkController extends Controller
     {
         try {
             $pMarks = Bookmark::where('user_id', api_user()->id)->where('post_type', 'photo')->get();
+            foreach ($pMarks as $key => $pm) {
+                $post = Post::find($pm->post_id);
+                $pm->photo = $post->content ? url('/') . '/' . $post->content : '';
+            }
+
             $vMarks = Bookmark::where('user_id', api_user()->id)->where('post_type', 'video')->get();
+            foreach ($vMarks as $key => $vm) {
+                $post = Post::find($vm->post_id);
+                $vm->video = $post->content ? url('/') . '/' . $post->content : '';
+            }
 
             $bookmarks = [];
 
