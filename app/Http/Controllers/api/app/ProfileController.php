@@ -162,10 +162,12 @@ class ProfileController extends Controller
                 $data['websites'] = $user->websites;
                 $data['location'] = $user->location;
                 $data['bio'] = $user->bio;
-                $data['followers'] = Follower::where('user_id', api_user()->id)->count();
-                $data['following'] = Follower::where('follower_id', api_user()->id)->count();
-                $data['posts'] = Post::where('user_id', api_user()->id)->count();
-                $data['likes'] = Like::join('posts', 'likes.post_id', 'posts.id')->where('posts.user_id', api_user()->id)->count();
+                $data['followers'] = Follower::where('user_id', $request->user_id)->count();
+                $data['following'] = Follower::where('follower_id', $request->user_id)->count();
+                $data['posts'] = Post::where('user_id', $request->user_id)->count();
+                $data['likes'] = Like::join('posts', 'likes.post_id', 'posts.id')->where('posts.user_id', $request->user_id)->count();
+                $data['total_photos'] = Post::select('id')->where('user_id', $request->user_id)->where('type', 'photo')->count();
+                $data['total_videos'] = Post::select('id')->where('user_id', $request->user_id)->where('type', 'video')->count();
 
                 return response()->json($data);
             }

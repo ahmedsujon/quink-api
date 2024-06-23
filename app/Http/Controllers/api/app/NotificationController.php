@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Post;
 
 class NotificationController extends Controller
 {
@@ -22,6 +23,15 @@ class NotificationController extends Controller
                 $user = getUserByID($notification->user_id);
                 $comment = Comment::find($notification->comment_id);
                 $comment_text = $comment ? Str::limit($comment->comment, 35, '...') : '';
+                $post_info = [];
+                if ($notification->post_id) {
+                    $post = Post::find($notification->post_id);
+                    $post_info = [
+                        'id' => $post->id,
+                        'type' => $post->type,
+                        'content' => $post->content ? url('/') . '/' . $post->content : null
+                    ];
+                }
                 $notification_array[] = [
                     'notification' => $user->name . ' ' . $notification->notification_text,
                     'time' => short_time($user->created_at),
@@ -30,7 +40,7 @@ class NotificationController extends Controller
                         'name' => $user->name,
                         'image' => $user->avatar ? url('/') . '/' . $user->avatar : url('/') . '/assets/images/avatar.png',
                     ],
-                    'post_id' => $notification->post_id,
+                    'post_info' => $post_info,
                     'comment_id' => $notification->comment_id,
                     'comment' => $comment_text,
                     'type' => $notification->type,
