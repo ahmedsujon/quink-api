@@ -68,9 +68,10 @@ class ProfileController extends Controller
     {
         $paginationValue = $request->per_page ?? 10;
 
-        $videos = Post::select('id', 'title', 'content')->where('user_id', api_user()->id)->where('type', 'video')->orderBy('id', 'DESC')->paginate($paginationValue);
+        $videos = Post::select('id', 'title', 'content', 'thumbnail')->where('user_id', api_user()->id)->where('type', 'video')->orderBy('id', 'DESC')->paginate($paginationValue);
         foreach ($videos as $key => $pt) {
             $pt->content = url('/') . '/' . $pt->content;
+            $pt->thumbnail = url('/') . '/' . $pt->thumbnail;
         }
 
         return response()->json([
@@ -197,9 +198,10 @@ class ProfileController extends Controller
     {
         $paginationValue = $request->per_page ?? 10;
 
-        $videos = Post::select('id', 'title', 'content')->where('user_id', $request->user_id)->where('type', 'video')->orderBy('id', 'DESC')->paginate($paginationValue);
+        $videos = Post::select('id', 'title', 'content', 'thumbnail')->where('user_id', $request->user_id)->where('type', 'video')->orderBy('id', 'DESC')->paginate($paginationValue);
         foreach ($videos as $key => $pt) {
             $pt->content = url('/') . '/' . $pt->content;
+            $pt->thumbnail = url('/') . '/' . $pt->thumbnail;
         }
 
         return response()->json([

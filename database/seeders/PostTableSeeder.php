@@ -39,6 +39,7 @@ class PostTableSeeder extends Seeder
             $post->hash_tags = $faker->randomElement([["HASH_1", "HASH_2"], ["HASH_1"], ["HASH_3", "HASH_4",], ["HASH_1", "HASH_4"]]);
             $post->tags = $faker->randomElement([[3,4], [3], [4,5], [5]]);
             $post->type = $type;
+            $post->thumbnail = $type == 'video' ? 'assets/images/placeholder.jpg' : '';
             $post->save();
 
             $com_st = rand(0, 1);

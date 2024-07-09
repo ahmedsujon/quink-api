@@ -20,6 +20,7 @@ return new class extends Migration
             $table->longText('hash_tags')->nullable();
             $table->text('tags')->nullable();
             $table->enum('type', ['photo', 'video', 'story'])->nullable();
+            $table->string('thumbnail', 2048)->nullable();
             $table->integer('views')->default(0);
             $table->timestamps();
         });
