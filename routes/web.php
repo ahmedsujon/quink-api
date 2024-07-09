@@ -14,8 +14,8 @@ use App\Http\Controllers\auth\SocialiteController;
 |
 */
 
-Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle']);
-Route::get('/auth/google/callback', [SocialiteController::class, 'getGoogleTokenFromWeb']);
+// Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle']);
+// Route::get('/auth/google/callback', [SocialiteController::class, 'getGoogleTokenFromWeb']);
 
 Route::get('/', function () {
     return redirect()->route('admin.login');
