@@ -17,5 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PermissionTableSeeder::class);
         $this->call(PostTableSeeder::class);
         $this->call(NotificationTableSeeder::class);
+        $this->call(FollowerSeeder::class);
+        $this->call(PostTagsTableSeeder::class);
     }
 }
