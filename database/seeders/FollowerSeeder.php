@@ -24,7 +24,7 @@ class FollowerSeeder extends Seeder
             }
         }
 
-        $sFollowers = [1, 3, 4];
+        $sFollowers = [1, 3, 4, 5, 6, 7, 8, 9, 10];
         foreach ($sFollowers as $key => $s_user_id) {
             $getSData = Follower::where('user_id', 2)->where('follower_id', $s_user_id)->first();
             if (!$getSData) {
@@ -34,7 +34,6 @@ class FollowerSeeder extends Seeder
                 $sData->save();
             }
         }
-
 
     }
 }

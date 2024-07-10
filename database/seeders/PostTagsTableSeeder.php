@@ -35,7 +35,7 @@ class PostTagsTableSeeder extends Seeder
         foreach ($userPosts as $uPostID) {
             $uPostTag = new PostTag();
             $uPostTag->post_id = $uPostID;
-            $uPostTag->mentioned_users = $userFollowers;
+            $uPostTag->mentioned_users = $faker->randomElements($userFollowers, $rand);
             $uPostTag->save();
         }
     }

@@ -8,6 +8,7 @@ use App\Http\Controllers\api\app\HomeController;
 use App\Http\Controllers\api\app\LikeController;
 use App\Http\Controllers\api\app\NotificationController;
 use App\Http\Controllers\api\app\ProfileController;
+use App\Http\Controllers\api\app\TagsController;
 use App\Http\Controllers\api\app\user\auth\AuthenticationController;
 use App\Http\Controllers\api\app\user\auth\UserResetPasswordController;
 
@@ -76,6 +77,9 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
     Route::get('user-profile', [ProfileController::class, 'userProfile']);
     Route::get('user-profile/photos', [ProfileController::class, 'userPhotos']);
     Route::get('user-profile/videos', [ProfileController::class, 'userVideos']);
+
+    // Tags Routes
+    Route::get('user/my-tags', [TagsController::class, 'allTags']);
 
     // User Profile
     Route::get('user/profile', [AuthenticationController::class, 'userProfile']);
