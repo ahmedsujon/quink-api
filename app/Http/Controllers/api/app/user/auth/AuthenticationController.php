@@ -177,15 +177,15 @@ class AuthenticationController extends Controller
             $response = $client->get($profileImage);
             $imageContents = $response->getBody()->getContents();
             $fileName = uniqid() . Carbon::now()->timestamp. '.jpg';
-            $filePath = public_path('profile_images/' . $fileName);
-            if (!File::exists(public_path('profile_images'))) {
-                File::makeDirectory(public_path('profile_images'), 0755, true);
+            $filePath = public_path('uploads/profile-images/' . $fileName);
+            if (!File::exists(public_path('uploads/profile-images'))) {
+                File::makeDirectory(public_path('uploads/profile-images'), 0755, true);
             }
 
             if ($user) {
                 if (!$user->avatar) {
                     File::put($filePath, $imageContents);
-                    $publicUrl = 'profile_images/' . $fileName;
+                    $publicUrl = 'uploads/profile-images/' . $fileName;
                     $user->avatar = $publicUrl;
                 }
                 $user->google_id = $googleUser->getId();
@@ -198,7 +198,7 @@ class AuthenticationController extends Controller
                 $user->password = Hash::make($googleUser->getId());
                 $user->google_id = $googleUser->getId();
                 File::put($filePath, $imageContents);
-                $user->avatar = 'profile_images/' . $fileName;
+                $user->avatar = 'uploads/profile-images/' . $fileName;
                 $user->save();
             }
 
