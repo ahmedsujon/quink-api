@@ -197,6 +197,7 @@ class AuthenticationController extends Controller
                 $user->email = $googleUser->getEmail();
                 $user->password = Hash::make($googleUser->getId());
                 $user->google_id = $googleUser->getId();
+                $user->email_verified_at = now();
                 File::put($filePath, $imageContents);
                 $user->avatar = 'uploads/profile-images/' . $fileName;
                 $user->save();
