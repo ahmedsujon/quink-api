@@ -48,9 +48,16 @@ class NotificationController extends Controller
             }
 
             if ($notifications->count() > 0) {
-                return response()->json($notification_array);
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Data retrieve successfully',
+                    'data' => $notification_array,
+                ]);
             } else {
-                return response()->json(['result' => false, 'message' => 'No Notification Found']);
+                return response()->json([
+                    'status_code' => 404,
+                    'message' => 'No Notification Found'
+                ]);
             }
         } catch (Exception $ex) {
             return response($ex->getMessage());

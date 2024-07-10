@@ -94,7 +94,11 @@ class BookmarkController extends Controller
                 'total' => $vMarks->count(),
                 'data' => $vMarks,
             ];
-            return response()->json($bookmarks);
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'Data retrieve successfully',
+                'data' => $bookmarks,
+            ]);
         } catch (Exception $ex) {
             return response($ex->getMessage());
         }
