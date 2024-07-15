@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\app\BookmarkController;
+use App\Http\Controllers\api\app\ChatController;
 use App\Http\Controllers\api\app\CommentController;
 use App\Http\Controllers\api\app\FollowController;
 use Illuminate\Support\Facades\Route;
@@ -66,6 +67,9 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
 
     // Notification Routes
     Route::get('user/notifications', [NotificationController::class, 'notifications']);
+
+    // Chat Routes
+    Route::get('user/all-chats', [ChatController::class, 'allChats']);
 
     // Profile Routes
     Route::get('user/my-profile', [ProfileController::class, 'myProfile']);
