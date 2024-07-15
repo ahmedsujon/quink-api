@@ -57,4 +57,15 @@ class User extends Authenticatable implements JWTSubject
         'password' => 'hashed',
         'websites' => 'array',
     ];
+
+    // Relationships
+    public function sentChats()
+    {
+        return $this->hasMany(Chat::class, 'sender');
+    }
+
+    public function receivedChats()
+    {
+        return $this->hasMany(Chat::class, 'receiver');
+    }
 }

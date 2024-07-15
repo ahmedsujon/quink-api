@@ -37,6 +37,18 @@ function short_time($created_at)
     return str_replace(' ago', '', $time);
 }
 
+function short_time_chat($created_at)
+{
+    $time = Carbon::parse($created_at)->diffForHumans();
+
+    $time = str_replace('minutes', 'min', $time);
+    $time = str_replace('minute', 'min', $time);
+    $time = str_replace('seconds', 'sec', $time);
+    $time = str_replace('second', 'sec', $time);
+
+    return $time;
+}
+
 function post_owner_info($user_id)
 {
     $user = DB::table('users')->select('name', 'avatar')->find($user_id);
