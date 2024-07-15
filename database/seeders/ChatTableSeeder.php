@@ -26,6 +26,7 @@ class ChatTableSeeder extends Seeder
 
             for ($j = 0; $j < 14; $j++) {
                 $rand = rand(0, 1);
+                $rand_date = rand(1, 3);
 
                 $message = new Message();
                 $message->chat_id = $chat->id;
@@ -33,6 +34,7 @@ class ChatTableSeeder extends Seeder
                 $message->receiver = $rand == 1 ? $i : 1;
                 $message->message = $faker->sentence(5);
                 $message->status = 1;
+                $message->created_at = now()->subDays($rand_date);
                 $message->save();
             }
 

@@ -15,15 +15,4 @@ class Chat extends Model
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
-
-    // Relationships
-    public function senderUser()
-    {
-        return $this->belongsTo(User::class, 'sender');
-    }
-
-    public function receiverUser()
-    {
-        return $this->belongsTo(User::class, 'receiver');
-    }
 }
