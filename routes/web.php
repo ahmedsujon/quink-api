@@ -21,5 +21,9 @@ Route::get('/', function () {
     return redirect()->route('admin.login');
 });
 
+Route::get('/chat', function () {
+    return view('chat');
+});
+
 //Call Route Files
 require __DIR__ . '/admin.php';

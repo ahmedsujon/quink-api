@@ -37,6 +37,8 @@ Route::get('v1/trending-stories', [HomeController::class, 'trendingStories']);
 
 Route::post('v1/login/google', [AuthenticationController::class, 'loginWithGoogle']);
 
+Route::post('/send-message', [ChatController::class, 'sendMessage']);
+
 //Authenticated user
 Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/'], function () {
     Route::post('user/logout', [AuthenticationController::class, 'userLogout']);
@@ -70,6 +72,9 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
 
     // Chat Routes
     Route::get('user/all-chats', [ChatController::class, 'allChats']);
+    Route::get('user/all-chats/messages', [ChatController::class, 'chatMessages']);
+
+
 
     // Profile Routes
     Route::get('user/my-profile', [ProfileController::class, 'myProfile']);
