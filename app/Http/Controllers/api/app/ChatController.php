@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\api\app;
 
-use App\Http\Controllers\Controller;
-use App\Models\Message;
-use App\Models\User;
-use Carbon\Carbon;
 use Exception;
+use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 
 class ChatController extends Controller
 {
@@ -127,5 +128,19 @@ class ChatController extends Controller
         } catch (Exception $ex) {
             return response($ex->getMessage());
         }
+    }
+
+    public function sendMessage(Request $request)
+    {
+        $message = $request->input('message');
+        $recipientId = $request->input('recipientId');
+
+        // Send the message to the Socket.io server
+        $response = Http::post('http://localhost:3000/send_message', [
+            'message' => $message,
+            'recipientId' => $recipientId,
+        ]);
+
+        return response()->json($response->json());
     }
 }
