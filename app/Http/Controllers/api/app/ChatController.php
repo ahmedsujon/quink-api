@@ -134,11 +134,13 @@ class ChatController extends Controller
     {
         $message = $request->input('message');
         $recipientId = $request->input('recipientId');
+        $user_id = $request->input('user_id');
 
         // Send the message to the Socket.io server
         $response = Http::post('http://localhost:3000/send_message', [
             'message' => $message,
             'recipientId' => $recipientId,
+            'user_id' => User::find($user_id)->email,
         ]);
 
         return response()->json($response->json());

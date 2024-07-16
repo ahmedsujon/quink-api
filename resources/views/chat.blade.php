@@ -1,3 +1,4 @@
+<?php header('Access-Control-Allow-Origin: *'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,8 +17,9 @@
         <ul id="messages"></ul>
     </div>
     <script>
-        const socket = io('http://localhost:3000'); // Update with your Socket.io server URL
-        const username = 'User' + Date.now(); // Change as needed
+        const socket = io('https://socketio.nzcoding.com'); // Update with your Socket.io server URL
+        // const username = 'User' + Date.now(); // Change as needed
+        const username = 'User1721147294906'; // Change as needed
 
         // Join the chat
         socket.emit('join', username);
@@ -26,6 +28,7 @@
         socket.on('receive_message', function(data) {
             const messages = document.getElementById('messages');
             const newMessage = document.createElement('li');
+            console.log(data);
             newMessage.textContent = `${data.user}: ${data.message}`;
             messages.appendChild(newMessage); // Append new message to the list
         });
