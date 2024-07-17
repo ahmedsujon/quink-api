@@ -36,11 +36,16 @@ io.on('connection', (socket) => {
 
 // API endpoint to send a message to all users
 app.post('/send_message', (req, res) => {
-    const { message, content } = req.body;
+    const {
+        message,
+        content
+    } = req.body;
     io.emit('receive_message', {
         content: content
     });
-    res.status(200).json({ status: 'Message sent' });
+    res.status(200).json({
+        status: 'Message sent'
+    });
 });
 
 server.listen(3000, () => {

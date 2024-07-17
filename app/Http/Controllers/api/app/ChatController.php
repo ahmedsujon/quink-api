@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\app;
 
 use App\Http\Controllers\Controller;
+use App\Models\Chat;
 use App\Models\Message;
 use App\Models\User;
 use Carbon\Carbon;
@@ -93,12 +94,27 @@ class ChatController extends Controller
             $pagination_value = $request->per_page ? $request->per_page : 20;
             $messages = Message::where('chat_id', $request->chat_id)->orderBy('created_at', 'asc')->paginate($pagination_value);
 
+            $chat = Chat::find($request->chat_id);
+            if ($chat->sender == api_user()->id) {
+                $user = User::find($chat->receiver);
+            } else {
+                $user = User::find($chat->sender);
+            }
+
+
             $groupedMessages = $messages->groupBy(function ($message) {
                 return Carbon::parse($message->created_at)->format('Y-m-d'); // Group by date
             });
 
             // Format the response
             $response = [
+                'user_info' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'image' => url('/') . '/' . ($user->avatar ? $user->avatar : 'assets/images/avatar.png'),
+                    'is_online' => 0,
+                    'is_verified' => $user->email_verified_at ? 1 : 0,
+                ],
                 'current_page' => $messages->currentPage(),
                 'data' => [],
                 'first_page_url' => $messages->url(1),
@@ -115,6 +131,17 @@ class ChatController extends Controller
             ];
 
             foreach ($groupedMessages as $date => $messagesOnDate) {
+
+                foreach ($messagesOnDate as $key => $dm) {
+                    $dm->file = $dm->file ? url('/') . '/' . $dm->file : '';
+                    $dm->time = Carbon::parse($dm->created_at)->format('H:i A');
+                    // if ($dm->sender == api_user()->id) {
+                    //     $dm->sent_from = 'me';
+                    // } else {
+                    //     $dm->sent_from = 'user';
+                    // }
+                }
+
                 $response['data'][] = [
                     'date' => $date,
                     'messages' => $messagesOnDate,
@@ -152,6 +179,13 @@ class ChatController extends Controller
             $message->sender = $request->sender;
             $message->receiver = $request->receiver;
             $message->message = $request->message;
+
+            if ($request->file) {
+                $file = uploadFile($request->file, 'messages');
+                $message->file = $file;
+                $message->file_type = $request->file_type;
+            }
+
             if ($message->save()) {
                 $content = [
                     "id" => $message->id,
@@ -159,6 +193,9 @@ class ChatController extends Controller
                     "sender" => $message->sender,
                     "receiver" => $message->receiver,
                     "message" => $message->message,
+                    "file" => $message->file ? url('/') . '/' . $message->file : '',
+                    "file_type" => $message->file_type,
+                    "time" => Carbon::parse($message->created_at)->format('H:i A'),
                     "status" => $message->status,
                     "created_at" => $message->created_at,
                     "updated_at" => $message->updated_at
@@ -171,8 +208,7 @@ class ChatController extends Controller
 
             return response()->json([
                 'status_code' => 200,
-                'message' => 'Message Sent Successfully',
-                'data' => [],
+                'message' => 'Message Sent Successfully'
             ]);
         } catch (Exception $ex) {
             return response($ex->getMessage());

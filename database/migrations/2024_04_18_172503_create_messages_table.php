@@ -17,6 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('sender')->nullable();
             $table->unsignedBigInteger('receiver')->nullable();
             $table->longText('message')->nullable();
+            $table->string('file', 2048)->nullable();
+            $table->enum('file_type', ['image', 'file'])->nullable();
             $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });
