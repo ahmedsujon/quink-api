@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\api\app;
 
-use Exception;
-use Carbon\Carbon;
-use App\Models\User;
+use App\Http\Controllers\Controller;
 use App\Models\Message;
+use App\Models\User;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class ChatController extends Controller
 {
@@ -132,17 +133,50 @@ class ChatController extends Controller
 
     public function sendMessage(Request $request)
     {
-        $message = $request->input('message');
-        $recipientId = $request->input('recipientId');
-        $user_id = $request->input('user_id');
 
-        // Send the message to the Socket.io server
-        $response = Http::post('http://localhost:3000/send_message', [
-            'message' => $message,
-            'recipientId' => $recipientId,
-            'user_id' => User::find($user_id)->email,
-        ]);
+        //Validation
+        $rules = [
+            'chat_id' => 'required',
+            'sender' => 'required',
+            'receiver' => 'required',
+            'message' => 'required',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
 
-        return response()->json($response->json());
+        try {
+            $message = new Message();
+            $message->chat_id = $request->chat_id;
+            $message->sender = $request->sender;
+            $message->receiver = $request->receiver;
+            $message->message = $request->message;
+            if ($message->save()) {
+                $content = [
+                    "id" => $message->id,
+                    "chat_id" => $message->chat_id,
+                    "sender" => $message->sender,
+                    "receiver" => $message->receiver,
+                    "message" => $message->message,
+                    "status" => $message->status,
+                    "created_at" => $message->created_at,
+                    "updated_at" => $message->updated_at
+                ];
+
+                $response = Http::post('http://localhost:3000/send_message', [
+                    'content' => $content
+                ]);
+            }
+
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'Message Sent Successfully',
+                'data' => [],
+            ]);
+        } catch (Exception $ex) {
+            return response($ex->getMessage());
+        }
+
     }
 }
