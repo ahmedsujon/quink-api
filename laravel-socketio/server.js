@@ -34,21 +34,18 @@ io.on('connection', (socket) => {
     });
 });
 
-// API endpoint to send a message to a specific user
+// API endpoint to send a message to all users
 app.post('/send_message', (req, res) => {
-    const { message, recipientId, user_id } = req.body; // Expect recipient ID from the request
-    const recipientSocketId = Object.keys(users).find(key => users[key] === recipientId);
-
-    if (recipientSocketId) {
-        io.to(recipientSocketId).emit('receive_message', {
-            user: users[recipientSocketId],
-            message: message,
-            user_id: user_id,
-        });
-        res.status(200).json({ status: 'Message sent' });
-    } else {
-        res.status(404).json({ status: 'User not found' });
-    }
+    const {
+        message,
+        content
+    } = req.body;
+    io.emit('receive_message', {
+        content: content
+    });
+    res.status(200).json({
+        status: 'Message sent'
+    });
 });
 
 server.listen(3000, () => {
