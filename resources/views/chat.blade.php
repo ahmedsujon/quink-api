@@ -29,7 +29,7 @@
         <ul id="messages" style="padding-left: 0px !important;"></ul>
     </div>
     <script>
-        const socket = io('http://localhost:3000'); // Change to your server URL
+        const socket = io('http://159.89.93.123:3000'); // Change to your server URL
         const username = 'nzhridoy';
 
         socket.emit('join', username);
@@ -41,8 +41,10 @@
 
             if (data.content.file_type == 'image') {
                 var file = '<img src="' + data.content.file + '" style="height: 70px; width: auto;" /><br><br>';
-            } else {
+            } else if (data.content.file_type == 'file') {
                 var file = '<a href="' + data.content.file + '" download>Download File</a><br><br>';
+            } else {
+                var file = '';
             }
 
             newMessage.innerHTML = `
