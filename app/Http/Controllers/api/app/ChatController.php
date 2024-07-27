@@ -201,7 +201,7 @@ class ChatController extends Controller
                     "updated_at" => $message->updated_at
                 ];
 
-                $response = Http::post('http://localhost:3000/send_message', [
+                $response = Http::post('http://159.89.93.123:3000/send_message', [
                     'content' => $content
                 ]);
             }

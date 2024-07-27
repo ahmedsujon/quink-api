@@ -29,7 +29,7 @@
         <ul id="messages" style="padding-left: 0px !important;"></ul>
     </div>
     <script>
-        const socket = io('http://localhost:3000'); // Change to your server URL
+        const socket = io('http://159.89.93.123:3000'); // Change to your server URL
         const username = 'nzhridoy';
 
         socket.emit('join', username);
