@@ -15,6 +15,59 @@ use Illuminate\Support\Facades\Validator;
 
 class ChatController extends Controller
 {
+    public function startChat(Request $request)
+    {
+        //Validation
+        $rules = [
+            'sender_id' => 'required',
+            'receiver_id' => 'required',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $sender = $request->sender_id;
+            $receiver = $request->receiver_id;
+
+            $getChat = Chat::where(function ($qa) use ($sender, $receiver) {
+                $qa->where('sender', $sender)
+                    ->where('receiver', $receiver);
+            })->orWhere(function ($qb) use ($sender, $receiver) {
+                $qb->where('sender', $receiver)
+                    ->where('receiver', $sender);
+            })->first();
+
+            if ($getChat) {
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Chat started successfully',
+                    'data' => [
+                        'chat_id' => $getChat->id,
+                    ],
+                ]);
+            } else {
+                $chat = new Chat();
+                $chat->sender = $request->sender_id;
+                $chat->receiver = $request->receiver_id;
+                $chat->status = 1;
+                $chat->save();
+
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Chat started successfully',
+                    'data' => [
+                        'chat_id' => $chat->id,
+                    ],
+                ]);
+            }
+        } catch (Exception $ex) {
+            return response($ex->getMessage());
+        }
+
+    }
+
     public function allChats(Request $request)
     {
         try {
@@ -100,7 +153,6 @@ class ChatController extends Controller
             } else {
                 $user = User::find($chat->sender);
             }
-
 
             $groupedMessages = $messages->groupBy(function ($message) {
                 return Carbon::parse($message->created_at)->format('Y-m-d'); // Group by date
@@ -198,17 +250,17 @@ class ChatController extends Controller
                     "time" => Carbon::parse($message->created_at)->format('H:i A'),
                     "status" => $message->status,
                     "created_at" => $message->created_at,
-                    "updated_at" => $message->updated_at
+                    "updated_at" => $message->updated_at,
                 ];
 
                 $response = Http::post('http://159.89.93.123:3000/send_message', [
-                    'content' => $content
+                    'content' => $content,
                 ]);
             }
 
             return response()->json([
                 'status_code' => 200,
-                'message' => 'Message Sent Successfully'
+                'message' => 'Message Sent Successfully',
             ]);
         } catch (Exception $ex) {
             return response($ex->getMessage());
