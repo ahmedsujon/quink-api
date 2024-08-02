@@ -51,8 +51,9 @@ function short_time_chat($created_at)
 
 function post_owner_info($user_id)
 {
-    $user = DB::table('users')->select('name', 'avatar')->find($user_id);
+    $user = DB::table('users')->select('id', 'name', 'avatar', 'email_verified_at as is_verified')->find($user_id);
     $user->avatar = url('/') . '/'. $user->avatar;
+    $user->is_verified = $user->is_verified ? 1 : 0;
     return $user;
 }
 

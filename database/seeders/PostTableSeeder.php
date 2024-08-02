@@ -38,6 +38,12 @@ class PostTableSeeder extends Seeder
             $post->content = $content;
             $post->hash_tags = $faker->randomElement([["HASH_1", "HASH_2"], ["HASH_1"], ["HASH_3", "HASH_4",], ["HASH_1", "HASH_4"]]);
             $post->tags = $faker->randomElement([[3,4], [3], [4,5], [5]]);
+            $post->link = 'https://google.com/';
+            $post->music = [
+                'id' => 1,
+                'name' => 'Ahwarun',
+                'music' => 'http://192.241.153.65/assets/audio/ahwarun.mp3'
+            ];
             $post->type = $type;
             $post->thumbnail = $type == 'video' ? 'assets/images/placeholder.jpg' : '';
             $post->save();

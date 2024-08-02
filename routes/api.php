@@ -34,6 +34,8 @@ Route::post('v1/change-password', [UserResetPasswordController::class, 'changePa
 Route::get('v1/trending-photos', [HomeController::class, 'trendingPhotos']);
 Route::get('v1/trending-videos', [HomeController::class, 'trendingVideos']);
 Route::get('v1/trending-stories', [HomeController::class, 'trendingStories']);
+Route::get('v1/posts/comments', [HomeController::class, 'comments']);
+Route::get('v1/bottom-stories', [HomeController::class, 'stories']);
 
 Route::post('v1/login/google', [AuthenticationController::class, 'loginWithGoogle']);
 

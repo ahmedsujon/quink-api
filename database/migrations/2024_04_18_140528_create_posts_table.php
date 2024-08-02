@@ -21,6 +21,8 @@ return new class extends Migration
             $table->text('tags')->nullable();
             $table->enum('type', ['photo', 'video', 'story'])->nullable();
             $table->string('thumbnail', 2048)->nullable();
+            $table->text('link')->nullable();
+            $table->longText('music')->nullable();
             $table->integer('views')->default(0);
             $table->timestamps();
         });
