@@ -60,9 +60,17 @@ class HomeController extends Controller
             }
 
             if($posts->count() > 0){
-                return response()->json($posts);
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Data retrieve successfully',
+                    'data' => $posts,
+                ]);
             } else {
-                return response()->json(['result' => 'false', 'message' => 'No Posts Found']);
+                return response()->json([
+                    'status_code' => 404,
+                    'message' => 'No data available',
+                    'data' => [],
+                ]);
             }
 
         } catch (Exception $ex) {
@@ -75,7 +83,7 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')->where('title', 'like', '%'. $search_term .'%')->where('type', 'video')->orderBy('id', 'DESC')->paginate($pagination_value);
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')->where('title', 'like', '%'. $search_term .'%')->where('type', 'video')->orderBy('id', 'DESC')->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
@@ -86,44 +94,43 @@ class HomeController extends Controller
 
                 $tags = [];
                 foreach ($post->tags as $tag_id) {
-                    $user = DB::table('users')->select('name', 'avatar')->find($tag_id);
+                    $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
                     $user->avatar = url('/') . '/' . $user->avatar;
 
                     $tags[] = [
+                        'id' => $user->id,
                         'name' => $user->name,
                         'avatar' => $user->avatar,
                     ];
                 }
                 $post->tags = $tags;
-
-
                 $post->total_like = Like::where('post_id', $post->id)->count();
                 $post->total_comment = Comment::where('post_id', $post->id)->count();
-
-                $comments = Comment::select('id', 'post_id', 'comment', 'created_at')->where('post_id', $post->id)->where('parent_id', NULL)->get();
-
-                foreach ($comments as $comment) {
-                    $replies = Comment::select('id', 'post_id', 'comment', 'created_at')->where('post_id', $post->id)->where('parent_id', $comment->id)->get();
-
-                    foreach($replies as $reply) {
-                        $reply->likes = CommentLike::where('comment_id', $reply->id)->count();
-                        $reply->created_time = short_time($reply->created_at);
-                    }
-
-                    $comment->likes = CommentLike::where('comment_id', $comment->id)->count();
-                    $comment->created_time = short_time($comment->created_at);
-                    $comment->total_replies = $replies->count();
-                    $comment->replies = $replies;
+                $post->owner_info = post_owner_info($post->owner_info);
+                if ($request->authenticated_user_id) {
+                    $like = Like::where('user_id', $request->authenticated_user_id)->where('post_id', $post->id)->first();
+                    $bookmark = Bookmark::where('user_id', $request->authenticated_user_id)->where('post_id', $post->id)->first();
+                    $post->is_reacted = $like ? 1 : 0;
+                    $post->is_bookmarked = $bookmark ? 1 : 0;
+                } else {
+                    $post->is_reacted = 0;
+                    $post->is_bookmarked = 0;
                 }
 
-                $post->owner_info = post_owner_info($post->owner_info);
-                $post->comments = $comments;
             }
 
             if($posts->count() > 0){
-                return response()->json($posts);
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Data retrieve successfully',
+                    'data' => $posts,
+                ]);
             } else {
-                return response()->json(['result' => 'false', 'message' => 'No Posts Found']);
+                return response()->json([
+                    'status_code' => 404,
+                    'message' => 'No data available',
+                    'data' => [],
+                ]);
             }
 
         } catch (Exception $ex) {
@@ -136,7 +143,7 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')->where('title', 'like', '%'. $search_term .'%')->where('type', 'story')->orderBy('id', 'DESC')->paginate($pagination_value);
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')->where('title', 'like', '%'. $search_term .'%')->where('type', 'story')->orderBy('id', 'DESC')->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
@@ -147,44 +154,43 @@ class HomeController extends Controller
 
                 $tags = [];
                 foreach ($post->tags as $tag_id) {
-                    $user = DB::table('users')->select('name', 'avatar')->find($tag_id);
+                    $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
                     $user->avatar = url('/') . '/' . $user->avatar;
 
                     $tags[] = [
+                        'id' => $user->id,
                         'name' => $user->name,
                         'avatar' => $user->avatar,
                     ];
                 }
                 $post->tags = $tags;
-
-
                 $post->total_like = Like::where('post_id', $post->id)->count();
                 $post->total_comment = Comment::where('post_id', $post->id)->count();
-
-                $comments = Comment::select('id', 'post_id', 'comment', 'created_at')->where('post_id', $post->id)->where('parent_id', NULL)->get();
-
-                foreach ($comments as $comment) {
-                    $replies = Comment::select('id', 'post_id', 'comment', 'created_at')->where('post_id', $post->id)->where('parent_id', $comment->id)->get();
-
-                    foreach($replies as $reply) {
-                        $reply->likes = CommentLike::where('comment_id', $reply->id)->count();
-                        $reply->created_time = short_time($reply->created_at);
-                    }
-
-                    $comment->likes = CommentLike::where('comment_id', $comment->id)->count();
-                    $comment->created_time = short_time($comment->created_at);
-                    $comment->total_replies = $replies->count();
-                    $comment->replies = $replies;
+                $post->owner_info = post_owner_info($post->owner_info);
+                if ($request->authenticated_user_id) {
+                    $like = Like::where('user_id', $request->authenticated_user_id)->where('post_id', $post->id)->first();
+                    $bookmark = Bookmark::where('user_id', $request->authenticated_user_id)->where('post_id', $post->id)->first();
+                    $post->is_reacted = $like ? 1 : 0;
+                    $post->is_bookmarked = $bookmark ? 1 : 0;
+                } else {
+                    $post->is_reacted = 0;
+                    $post->is_bookmarked = 0;
                 }
 
-                $post->owner_info = post_owner_info($post->owner_info);
-                $post->comments = $comments;
             }
 
             if($posts->count() > 0){
-                return response()->json($posts);
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Data retrieve successfully',
+                    'data' => $posts,
+                ]);
             } else {
-                return response()->json(['result' => 'false', 'message' => 'No Posts Found']);
+                return response()->json([
+                    'status_code' => 404,
+                    'message' => 'No data available',
+                    'data' => [],
+                ]);
             }
 
         } catch (Exception $ex) {
