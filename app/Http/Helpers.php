@@ -70,6 +70,14 @@ function post_owner_info_stories($user_id)
     return $user;
 }
 
+function comment_user_info($user_id)
+{
+    $user = DB::table('users')->select('id', 'name', 'avatar', 'email_verified_at as is_verified')->find($user_id);
+    $user->avatar = url('/') . '/'. $user->avatar;
+    $user->is_verified = $user->is_verified ? 1 : 0;
+    return $user;
+}
+
 function notification($for, $user_id, $notification_text, $type, $post_id = NULL, $comment_id = NULL)
 {
     if ($type == 'follow') {

@@ -390,7 +390,7 @@ class HomeController extends Controller
     {
         try {
             $pagination_value = $request->per_page ? $request->per_page : 10;
-            $comments = Comment::select('id', 'post_id', 'comment', 'created_at')->where('post_id', $request->post_id)->where('parent_id', NULL)->paginate($pagination_value);
+            $comments = Comment::select('id', 'post_id', 'comment', 'user_id as user_info', 'created_at')->where('post_id', $request->post_id)->where('parent_id', NULL)->paginate($pagination_value);
 
             foreach ($comments as $comment) {
                 $replies = Comment::select('id', 'post_id', 'comment', 'created_at')->where('post_id', $request->post_id)->where('parent_id', $comment->id)->get();
@@ -416,12 +416,16 @@ class HomeController extends Controller
                 $comment->created_time = short_time($comment->created_at);
                 $comment->total_replies = $replies->count();
                 $comment->replies = $replies;
+                $comment->user_info = comment_user_info($comment->user_info);
             }
 
             return response()->json([
                 'status_code' => 200,
                 'message' => 'Data retrieve successfully',
-                'data' => $comments,
+                'data' => [
+                    'total_comments' => Comment::where('post_id', $request->post_id)->count(),
+                    'comments' => $comments
+                ],
             ]);
         } catch (Exception $ex) {
             return response($ex->getMessage());
