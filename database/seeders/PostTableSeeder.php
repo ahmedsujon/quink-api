@@ -19,6 +19,7 @@ class PostTableSeeder extends Seeder
         for ($i = 0; $i < 25; $i++) {
             $faker = Faker::create();
 
+            $media_type = null;
             $type = $faker->randomElement(['photo', 'video', 'story']);
             if ($type == 'photo') {
                 $content = 'assets/images/post-img.jpg';
@@ -27,7 +28,12 @@ class PostTableSeeder extends Seeder
                 $content = 'assets/videos/reel_' . $faker->randomElement(['a', 'b', 'c']) . '.mp4';
                 $title = $faker->sentence(1);
             } else {
-                $content = 'assets/images/post-img.jpg';
+                $media_type = $faker->randomElement(['photo', 'video']);
+                if ($media_type == 'photo') {
+                    $content = 'assets/images/post-img.jpg';
+                } else {
+                    $content = 'assets/videos/reel_' . $faker->randomElement(['a', 'b', 'c']) . '.mp4';
+                }
                 $title = $faker->sentence(1);
             }
 
@@ -36,16 +42,18 @@ class PostTableSeeder extends Seeder
             $post->title = $title;
             $post->description = $faker->paragraph(2);
             $post->content = $content;
-            $post->hash_tags = $faker->randomElement([["HASH_1", "HASH_2"], ["HASH_1"], ["HASH_3", "HASH_4",], ["HASH_1", "HASH_4"]]);
-            $post->tags = $faker->randomElement([[3,4], [3], [4,5], [5]]);
+            $post->hash_tags = $faker->randomElement([["HASH_1", "HASH_2"], ["HASH_1"], ["HASH_3", "HASH_4"], ["HASH_1", "HASH_4"]]);
+            $post->tags = $faker->randomElement([[3, 4], [3], [4, 5], [5]]);
             $post->link = 'https://google.com/';
             $post->music = [
                 'id' => 1,
                 'name' => 'Ahwarun',
-                'music' => 'http://192.241.153.65/assets/audio/ahwarun.mp3'
+                'music' => 'http://192.241.153.65/assets/audio/ahwarun.mp3',
             ];
             $post->type = $type;
+            $post->media_type = $media_type;
             $post->thumbnail = $type == 'video' ? 'assets/images/placeholder.jpg' : '';
+            $post->views = rand(0, 100);
             $post->save();
 
             $com_st = rand(0, 1);
