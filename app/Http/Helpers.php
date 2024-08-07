@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use App\Models\Food;
 use App\Models\Admin;
+use App\Models\Follower;
 use App\Models\Notification;
 use App\Models\Setting;
 use App\Models\Permission;
@@ -49,7 +50,27 @@ function short_time_chat($created_at)
     return $time;
 }
 
-function post_owner_info($user_id)
+function post_owner_info($user_id, $auth_id)
+{
+    $user = DB::table('users')->select('id', 'name', 'avatar', 'email_verified_at as is_verified')->find($user_id);
+    $user->avatar = url('/') . '/'. $user->avatar;
+    $user->is_verified = $user->is_verified ? 1 : 0;
+
+    $follow = Follower::where('user_id', $user_id)->where('follower_id', $auth_id)->first();
+    $user->is_following = $follow ? 1 : 0;
+
+    return $user;
+}
+function post_owner_info_stories($user_id)
+{
+    $user = DB::table('users')->select('id', 'name', 'avatar', 'email_verified_at as is_verified')->find($user_id);
+    $user->avatar = url('/') . '/'. $user->avatar;
+    $user->is_verified = $user->is_verified ? 1 : 0;
+
+    return $user;
+}
+
+function comment_user_info($user_id)
 {
     $user = DB::table('users')->select('id', 'name', 'avatar', 'email_verified_at as is_verified')->find($user_id);
     $user->avatar = url('/') . '/'. $user->avatar;

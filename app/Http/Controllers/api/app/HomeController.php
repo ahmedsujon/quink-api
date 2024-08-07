@@ -46,7 +46,7 @@ class HomeController extends Controller
                 $post->tags = $tags;
                 $post->total_like = Like::where('post_id', $post->id)->count();
                 $post->total_comment = Comment::where('post_id', $post->id)->count();
-                $post->owner_info = post_owner_info($post->owner_info);
+                $post->owner_info = post_owner_info($post->owner_info, $request->authenticated_user_id);
                 if ($request->authenticated_user_id) {
                     $like = Like::where('user_id', $request->authenticated_user_id)->where('post_id', $post->id)->first();
                     $bookmark = Bookmark::where('user_id', $request->authenticated_user_id)->where('post_id', $post->id)->first();
@@ -106,7 +106,7 @@ class HomeController extends Controller
                 $post->tags = $tags;
                 $post->total_like = Like::where('post_id', $post->id)->count();
                 $post->total_comment = Comment::where('post_id', $post->id)->count();
-                $post->owner_info = post_owner_info($post->owner_info);
+                $post->owner_info = post_owner_info($post->owner_info, $request->authenticated_user_id);
                 if ($request->authenticated_user_id) {
                     $like = Like::where('user_id', $request->authenticated_user_id)->where('post_id', $post->id)->first();
                     $bookmark = Bookmark::where('user_id', $request->authenticated_user_id)->where('post_id', $post->id)->first();
@@ -143,7 +143,7 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')->where('title', 'like', '%'. $search_term .'%')->where('type', 'story')->orderBy('id', 'DESC')->paginate($pagination_value);
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')->where('title', 'like', '%'. $search_term .'%')->where('type', 'story')->orderBy('id', 'DESC')->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
@@ -166,7 +166,7 @@ class HomeController extends Controller
                 $post->tags = $tags;
                 $post->total_like = Like::where('post_id', $post->id)->count();
                 $post->total_comment = Comment::where('post_id', $post->id)->count();
-                $post->owner_info = post_owner_info($post->owner_info);
+                $post->owner_info = post_owner_info($post->owner_info, $request->authenticated_user_id);
                 if ($request->authenticated_user_id) {
                     $like = Like::where('user_id', $request->authenticated_user_id)->where('post_id', $post->id)->first();
                     $bookmark = Bookmark::where('user_id', $request->authenticated_user_id)->where('post_id', $post->id)->first();
@@ -230,7 +230,7 @@ class HomeController extends Controller
                 $post->tags = $tags;
                 $post->total_like = Like::where('post_id', $post->id)->count();
                 $post->total_comment = Comment::where('post_id', $post->id)->count();
-                $post->owner_info = post_owner_info($post->owner_info);
+                $post->owner_info = post_owner_info($post->owner_info, api_user()->id);
                 if (api_user()) {
                     $like = Like::where('user_id', api_user()->id)->where('post_id', $post->id)->first();
                     $bookmark = Bookmark::where('user_id', api_user()->id)->where('post_id', $post->id)->first();
@@ -292,7 +292,7 @@ class HomeController extends Controller
                 $post->tags = $tags;
                 $post->total_like = Like::where('post_id', $post->id)->count();
                 $post->total_comment = Comment::where('post_id', $post->id)->count();
-                $post->owner_info = post_owner_info($post->owner_info);
+                $post->owner_info = post_owner_info($post->owner_info, api_user()->id);
                 if (api_user()) {
                     $like = Like::where('user_id', api_user()->id)->where('post_id', $post->id)->first();
                     $bookmark = Bookmark::where('user_id', api_user()->id)->where('post_id', $post->id)->first();
@@ -331,7 +331,7 @@ class HomeController extends Controller
 
             $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')->where('title', 'like', '%'. $search_term .'%')->where('type', 'story')->orderBy('id', 'DESC')->whereIn('user_id', $myFollowing)->paginate($pagination_value);
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')->where('title', 'like', '%'. $search_term .'%')->where('type', 'story')->orderBy('id', 'DESC')->whereIn('user_id', $myFollowing)->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
@@ -354,7 +354,7 @@ class HomeController extends Controller
                 $post->tags = $tags;
                 $post->total_like = Like::where('post_id', $post->id)->count();
                 $post->total_comment = Comment::where('post_id', $post->id)->count();
-                $post->owner_info = post_owner_info($post->owner_info);
+                $post->owner_info = post_owner_info($post->owner_info, api_user()->id);
                 if (api_user()) {
                     $like = Like::where('user_id', api_user()->id)->where('post_id', $post->id)->first();
                     $bookmark = Bookmark::where('user_id', api_user()->id)->where('post_id', $post->id)->first();
@@ -390,7 +390,7 @@ class HomeController extends Controller
     {
         try {
             $pagination_value = $request->per_page ? $request->per_page : 10;
-            $comments = Comment::select('id', 'post_id', 'comment', 'created_at')->where('post_id', $request->post_id)->where('parent_id', NULL)->paginate($pagination_value);
+            $comments = Comment::select('id', 'post_id', 'comment', 'user_id as user_info', 'created_at')->where('post_id', $request->post_id)->where('parent_id', NULL)->paginate($pagination_value);
 
             foreach ($comments as $comment) {
                 $replies = Comment::select('id', 'post_id', 'comment', 'created_at')->where('post_id', $request->post_id)->where('parent_id', $comment->id)->get();
@@ -416,12 +416,16 @@ class HomeController extends Controller
                 $comment->created_time = short_time($comment->created_at);
                 $comment->total_replies = $replies->count();
                 $comment->replies = $replies;
+                $comment->user_info = comment_user_info($comment->user_info);
             }
 
             return response()->json([
                 'status_code' => 200,
                 'message' => 'Data retrieve successfully',
-                'data' => $comments,
+                'data' => [
+                    'total_comments' => Comment::where('post_id', $request->post_id)->count(),
+                    'comments' => $comments
+                ],
             ]);
         } catch (Exception $ex) {
             return response($ex->getMessage());
@@ -439,7 +443,7 @@ class HomeController extends Controller
 
             foreach ($posts as $key => $post) {
                 $post->content = url('/') . '/' . $post->content;
-                $post->user_info = post_owner_info($post->user_info);
+                $post->user_info = post_owner_info_stories($post->user_info);
             }
 
             return response()->json([
