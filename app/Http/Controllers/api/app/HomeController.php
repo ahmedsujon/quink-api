@@ -393,7 +393,7 @@ class HomeController extends Controller
             $comments = Comment::select('id', 'post_id', 'comment', 'user_id as user_info', 'created_at')->where('post_id', $request->post_id)->where('parent_id', NULL)->paginate($pagination_value);
 
             foreach ($comments as $comment) {
-                $replies = Comment::select('id', 'post_id', 'comment', 'created_at')->where('post_id', $request->post_id)->where('parent_id', $comment->id)->get();
+                $replies = Comment::select('id', 'post_id', 'comment', 'user_id as user_info', 'created_at')->where('post_id', $request->post_id)->where('parent_id', $comment->id)->get();
 
                 foreach($replies as $reply) {
                     $reply->likes = CommentLike::where('comment_id', $reply->id)->count();
@@ -403,6 +403,7 @@ class HomeController extends Controller
                     } else {
                         $reply->is_liked = 0;
                     }
+                    $reply->user_info = comment_user_info($reply->user_info);
                     $reply->created_time = short_time($reply->created_at);
                 }
 
