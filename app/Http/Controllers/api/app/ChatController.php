@@ -253,7 +253,9 @@ class ChatController extends Controller
                     "updated_at" => $message->updated_at,
                 ];
 
-                $response = Http::post('https://chat.sadax.studio/send_message', [
+                $socket_server = env('SOCKET_SERVER');
+
+                $response = Http::post(''.$socket_server.'/send_message', [
                     'content' => $content,
                 ]);
             }
