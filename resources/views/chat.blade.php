@@ -29,7 +29,7 @@
         <ul id="messages" style="padding-left: 0px !important;"></ul>
     </div>
     <script>
-        const socket = io('https://chat.sadax.studio'); // Change to your server URL
+        const socket = io('{{ env('SOCKET_SERVER') }}'); // Change to your server URL
         const username = 'nzhridoy';
 
         socket.emit('join', username);
