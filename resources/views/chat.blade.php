@@ -35,6 +35,7 @@
         socket.emit('join', username);
 
         socket.on('receive_message', function(data) {
+            console.log(data);
             const messages = document.getElementById('messages');
             const newMessage = document.createElement('li');
             newMessage.classList.add('message');
