@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
@@ -150,6 +151,25 @@ class PostController extends Controller
                     'data' => [],
                 ]);
             }
+        } catch (Exception $ex) {
+            return response($ex->getMessage());
+        }
+    }
+
+    public function postTagUsers(Request $request)
+    {
+        try {
+            $users = DB::table('users')->select('id', 'name', 'username', 'avatar')->where('username', 'like', '%' . $request->search_value . '%')->get();
+
+            foreach ($users as $key => $user) {
+                $user->avatar = url('/') . '/' . $user->avatar;
+            }
+
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'Data retrieve successfully',
+                'data' => $users,
+            ]);
         } catch (Exception $ex) {
             return response($ex->getMessage());
         }
