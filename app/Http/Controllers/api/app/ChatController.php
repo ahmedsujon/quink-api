@@ -63,11 +63,20 @@ class ChatController extends Controller
                 $chat->status = 1;
                 $chat->save();
 
+                $user = User::find($request->receiver_id);
+
                 return response()->json([
                     'status_code' => 200,
                     'message' => 'Chat started successfully',
                     'data' => [
                         'chat_id' => $chat->id,
+                        'user_info' => [
+                            'id' => $user->id,
+                            'name' => $user->name,
+                            'image' => url('/') . '/' . ($user->avatar ? $user->avatar : 'assets/images/avatar.png'),
+                            'is_online' => 0,
+                            'is_verified' => $user->email_verified_at ? 1 : 0,
+                        ],
                     ],
                 ]);
             }
