@@ -46,6 +46,9 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
 
     // add post
     Route::post('add-new-post', [PostController::class, 'storePost']);
+    Route::get('edit-post', [PostController::class, 'editPost']);
+    Route::post('update-post', [PostController::class, 'updatePost']);
+    Route::get('delete-post', [PostController::class, 'deletePost']);
 
     // Home Page Posts Following
     Route::get('following-photos', [HomeController::class, 'followingPhotos']);
