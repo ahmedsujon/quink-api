@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\app\HomeController;
 use App\Http\Controllers\api\app\LikeController;
 use App\Http\Controllers\api\app\NotificationController;
+use App\Http\Controllers\api\app\PostController;
 use App\Http\Controllers\api\app\ProfileController;
 use App\Http\Controllers\api\app\TagsController;
 use App\Http\Controllers\api\app\user\auth\AuthenticationController;
@@ -42,6 +43,9 @@ Route::post('v1/login/google', [AuthenticationController::class, 'loginWithGoogl
 //Authenticated user
 Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/'], function () {
     Route::post('user/logout', [AuthenticationController::class, 'userLogout']);
+
+    // add post
+    Route::post('add-new-post', [PostController::class, 'storePost']);
 
     // Home Page Posts Following
     Route::get('following-photos', [HomeController::class, 'followingPhotos']);
