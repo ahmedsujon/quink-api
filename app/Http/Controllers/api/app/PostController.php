@@ -15,14 +15,14 @@ class PostController extends Controller
     {
         //Validation
         $rules = [
-            'title' => 'required',
-            'description' => 'required',
+            // 'title' => 'required',
+            // 'description' => 'required',
             'content' => 'required',
             'type' => 'required',
-            'hash_tags' => 'required',
-            'tags' => 'required',
-            'link' => 'required',
-            'music' => 'required',
+            // 'hash_tags' => 'required',
+            // 'tags' => 'required',
+            // 'link' => 'required',
+            // 'music' => 'required',
             'media_type' => 'required',
             'thumbnail' => 'required_if:type,video',
         ];
@@ -86,14 +86,14 @@ class PostController extends Controller
         //Validation
         $rules = [
             'post_id' => 'required',
-            'title' => 'required',
-            'description' => 'required',
+            // 'title' => 'required',
+            // 'description' => 'required',
             'content' => 'required',
             'type' => 'required',
-            'hash_tags' => 'required',
-            'tags' => 'required',
-            'link' => 'required',
-            'music' => 'required',
+            // 'hash_tags' => 'required',
+            // 'tags' => 'required',
+            // 'link' => 'required',
+            // 'music' => 'required',
             'media_type' => 'required',
             'thumbnail' => 'required_if:type,video',
         ];
