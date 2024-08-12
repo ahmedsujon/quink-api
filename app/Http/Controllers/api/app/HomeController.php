@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\api\app;
 
-use App\Http\Controllers\Controller;
-use App\Models\Bookmark;
-use App\Models\Comment;
-use App\Models\CommentLike;
-use App\Models\Follower;
+use Exception;
 use App\Models\Like;
 use App\Models\Post;
-use Exception;
+use App\Models\Comment;
+use App\Models\Bookmark;
+use App\Models\Follower;
+use App\Models\CommentLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class HomeController extends Controller
 {
@@ -499,4 +500,62 @@ class HomeController extends Controller
             return response($ex->getMessage());
         }
     }
+
+    public function userStories(Request $request)
+    {
+        try {
+            $pagination_value = $request->per_page ? $request->per_page : 10;
+
+            $posts = Post::select('id as post_id', 'content', 'type', 'user_id as user_info')->where('type', 'story')->orderBy('id', 'DESC')->where('user_id', $request->user_id)->paginate($pagination_value);
+
+            foreach ($posts as $key => $post) {
+                $post->content = url('/') . '/' . $post->content;
+                $post->user_info = post_owner_info_stories($post->user_info);
+            }
+
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'Data retrieve successfully',
+                'data' => $posts,
+            ]);
+
+        } catch (Exception $ex) {
+            return response($ex->getMessage());
+        }
+    }
+
+    public function postViewCount(Request $request)
+    {
+        //Validation
+        $rules = [
+            'post_id' => 'required',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $post = Post::find($request->post_id);
+            if ($post) {
+                $post->views += 1;
+                $post->save();
+
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Post view added',
+                    'data' => []
+                ]);
+            } else {
+                return response()->json([
+                    'status_code' => 404,
+                    'message' => 'Post not found',
+                    'data' => []
+                ]);
+            }
+        } catch (Exception $ex) {
+            return response($ex->getMessage());
+        }
+    }
 }
+
