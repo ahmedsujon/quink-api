@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\api\app;
 
-use Exception;
-use App\Models\Post;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Bookmark;
 use App\Models\Comment;
 use App\Models\CommentLike;
 use App\Models\Follower;
 use App\Models\Like;
-use Carbon\Carbon;
+use App\Models\Post;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
@@ -23,7 +22,12 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')->where('title', 'like', '%'. $search_term .'%')->where('type', 'photo')->orderBy('id', 'DESC')->paginate($pagination_value);
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
+                ->when($search_term, function ($query) use ($search_term) {
+                    return $query->where('title', 'like', '%' . $search_term . '%');
+                })
+                ->where('type', 'photo')->orderBy('id', 'DESC')
+                ->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
@@ -33,15 +37,17 @@ class HomeController extends Controller
                 }
 
                 $tags = [];
-                foreach ($post->tags as $tag_id) {
-                    $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
-                    $user->avatar = url('/') . '/' . $user->avatar;
+                if ($post->tags) {
+                    foreach ($post->tags as $tag_id) {
+                        $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
+                        $user->avatar = url('/') . '/' . $user->avatar;
 
-                    $tags[] = [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'avatar' => $user->avatar,
-                    ];
+                        $tags[] = [
+                            'id' => $user->id,
+                            'name' => $user->name,
+                            'avatar' => $user->avatar,
+                        ];
+                    }
                 }
                 $post->tags = $tags;
                 $post->total_like = Like::where('post_id', $post->id)->count();
@@ -59,7 +65,7 @@ class HomeController extends Controller
 
             }
 
-            if($posts->count() > 0){
+            if ($posts->count() > 0) {
                 return response()->json([
                     'status_code' => 200,
                     'message' => 'Data retrieve successfully',
@@ -83,7 +89,12 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')->where('title', 'like', '%'. $search_term .'%')->where('type', 'video')->orderBy('id', 'DESC')->paginate($pagination_value);
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
+                ->when($search_term, function ($query) use ($search_term) {
+                    return $query->where('title', 'like', '%' . $search_term . '%');
+                })
+                ->where('type', 'video')->orderBy('id', 'DESC')
+                ->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
@@ -93,16 +104,19 @@ class HomeController extends Controller
                 }
 
                 $tags = [];
-                foreach ($post->tags as $tag_id) {
-                    $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
-                    $user->avatar = url('/') . '/' . $user->avatar;
+                if ($post->tags) {
+                    foreach ($post->tags as $tag_id) {
+                        $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
+                        $user->avatar = url('/') . '/' . $user->avatar;
 
-                    $tags[] = [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'avatar' => $user->avatar,
-                    ];
+                        $tags[] = [
+                            'id' => $user->id,
+                            'name' => $user->name,
+                            'avatar' => $user->avatar,
+                        ];
+                    }
                 }
+
                 $post->tags = $tags;
                 $post->total_like = Like::where('post_id', $post->id)->count();
                 $post->total_comment = Comment::where('post_id', $post->id)->count();
@@ -119,7 +133,7 @@ class HomeController extends Controller
 
             }
 
-            if($posts->count() > 0){
+            if ($posts->count() > 0) {
                 return response()->json([
                     'status_code' => 200,
                     'message' => 'Data retrieve successfully',
@@ -143,7 +157,12 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')->where('title', 'like', '%'. $search_term .'%')->where('type', 'story')->orderBy('id', 'DESC')->paginate($pagination_value);
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
+                ->when($search_term, function ($query) use ($search_term) {
+                    return $query->where('title', 'like', '%' . $search_term . '%');
+                })
+                ->where('type', 'story')->orderBy('id', 'DESC')
+                ->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
@@ -153,15 +172,17 @@ class HomeController extends Controller
                 }
 
                 $tags = [];
-                foreach ($post->tags as $tag_id) {
-                    $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
-                    $user->avatar = url('/') . '/' . $user->avatar;
+                if ($post->tags) {
+                    foreach ($post->tags as $tag_id) {
+                        $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
+                        $user->avatar = url('/') . '/' . $user->avatar;
 
-                    $tags[] = [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'avatar' => $user->avatar,
-                    ];
+                        $tags[] = [
+                            'id' => $user->id,
+                            'name' => $user->name,
+                            'avatar' => $user->avatar,
+                        ];
+                    }
                 }
                 $post->tags = $tags;
                 $post->total_like = Like::where('post_id', $post->id)->count();
@@ -179,7 +200,7 @@ class HomeController extends Controller
 
             }
 
-            if($posts->count() > 0){
+            if ($posts->count() > 0) {
                 return response()->json([
                     'status_code' => 200,
                     'message' => 'Data retrieve successfully',
@@ -207,7 +228,12 @@ class HomeController extends Controller
 
             $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')->where('title', 'like', '%'. $search_term .'%')->where('type', 'photo')->orderBy('id', 'DESC')->whereIn('user_id', $myFollowing)->paginate($pagination_value);
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
+                ->when($search_term, function ($query) use ($search_term) {
+                    return $query->where('title', 'like', '%' . $search_term . '%');
+                })
+                ->where('type', 'photo')->orderBy('id', 'DESC')
+                ->whereIn('user_id', $myFollowing)->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
@@ -217,15 +243,17 @@ class HomeController extends Controller
                 }
 
                 $tags = [];
-                foreach ($post->tags as $tag_id) {
-                    $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
-                    $user->avatar = url('/') . '/' . $user->avatar;
+                if ($post->tags) {
+                    foreach ($post->tags as $tag_id) {
+                        $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
+                        $user->avatar = url('/') . '/' . $user->avatar;
 
-                    $tags[] = [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'avatar' => $user->avatar,
-                    ];
+                        $tags[] = [
+                            'id' => $user->id,
+                            'name' => $user->name,
+                            'avatar' => $user->avatar,
+                        ];
+                    }
                 }
                 $post->tags = $tags;
                 $post->total_like = Like::where('post_id', $post->id)->count();
@@ -243,7 +271,7 @@ class HomeController extends Controller
 
             }
 
-            if($posts->count() > 0){
+            if ($posts->count() > 0) {
                 return response()->json([
                     'status_code' => 200,
                     'message' => 'Data retrieve successfully',
@@ -269,7 +297,12 @@ class HomeController extends Controller
 
             $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')->where('title', 'like', '%'. $search_term .'%')->where('type', 'video')->orderBy('id', 'DESC')->whereIn('user_id', $myFollowing)->paginate($pagination_value);
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
+                ->when($search_term, function ($query) use ($search_term) {
+                    return $query->where('title', 'like', '%' . $search_term . '%');
+                })
+                ->where('type', 'video')->orderBy('id', 'DESC')
+                ->whereIn('user_id', $myFollowing)->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
@@ -279,15 +312,17 @@ class HomeController extends Controller
                 }
 
                 $tags = [];
-                foreach ($post->tags as $tag_id) {
-                    $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
-                    $user->avatar = url('/') . '/' . $user->avatar;
+                if ($post->tags) {
+                    foreach ($post->tags as $tag_id) {
+                        $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
+                        $user->avatar = url('/') . '/' . $user->avatar;
 
-                    $tags[] = [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'avatar' => $user->avatar,
-                    ];
+                        $tags[] = [
+                            'id' => $user->id,
+                            'name' => $user->name,
+                            'avatar' => $user->avatar,
+                        ];
+                    }
                 }
                 $post->tags = $tags;
                 $post->total_like = Like::where('post_id', $post->id)->count();
@@ -305,7 +340,7 @@ class HomeController extends Controller
 
             }
 
-            if($posts->count() > 0){
+            if ($posts->count() > 0) {
                 return response()->json([
                     'status_code' => 200,
                     'message' => 'Data retrieve successfully',
@@ -331,7 +366,12 @@ class HomeController extends Controller
 
             $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')->where('title', 'like', '%'. $search_term .'%')->where('type', 'story')->orderBy('id', 'DESC')->whereIn('user_id', $myFollowing)->paginate($pagination_value);
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
+                ->when($search_term, function ($query) use ($search_term) {
+                    return $query->where('title', 'like', '%' . $search_term . '%');
+                })
+                ->where('type', 'story')->orderBy('id', 'DESC')
+                ->whereIn('user_id', $myFollowing)->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
@@ -341,15 +381,17 @@ class HomeController extends Controller
                 }
 
                 $tags = [];
-                foreach ($post->tags as $tag_id) {
-                    $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
-                    $user->avatar = url('/') . '/' . $user->avatar;
+                if ($post->tags) {
+                    foreach ($post->tags as $tag_id) {
+                        $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
+                        $user->avatar = url('/') . '/' . $user->avatar;
 
-                    $tags[] = [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'avatar' => $user->avatar,
-                    ];
+                        $tags[] = [
+                            'id' => $user->id,
+                            'name' => $user->name,
+                            'avatar' => $user->avatar,
+                        ];
+                    }
                 }
                 $post->tags = $tags;
                 $post->total_like = Like::where('post_id', $post->id)->count();
@@ -367,7 +409,7 @@ class HomeController extends Controller
 
             }
 
-            if($posts->count() > 0){
+            if ($posts->count() > 0) {
                 return response()->json([
                     'status_code' => 200,
                     'message' => 'Data retrieve successfully',
@@ -390,12 +432,12 @@ class HomeController extends Controller
     {
         try {
             $pagination_value = $request->per_page ? $request->per_page : 10;
-            $comments = Comment::select('id', 'post_id', 'comment', 'user_id as user_info', 'created_at')->where('post_id', $request->post_id)->where('parent_id', NULL)->paginate($pagination_value);
+            $comments = Comment::select('id', 'post_id', 'comment', 'user_id as user_info', 'created_at')->where('post_id', $request->post_id)->where('parent_id', null)->orderBy('id', 'DESC')->paginate($pagination_value);
 
             foreach ($comments as $comment) {
-                $replies = Comment::select('id', 'post_id', 'comment', 'user_id as user_info', 'created_at')->where('post_id', $request->post_id)->where('parent_id', $comment->id)->get();
+                $replies = Comment::select('id', 'post_id', 'comment', 'user_id as user_info', 'created_at')->where('post_id', $request->post_id)->where('parent_id', $comment->id)->orderBy('id', 'DESC')->get();
 
-                foreach($replies as $reply) {
+                foreach ($replies as $reply) {
                     $reply->likes = CommentLike::where('comment_id', $reply->id)->count();
                     if ($request->authenticated_user_id) {
                         $like = CommentLike::where('user_id', $request->authenticated_user_id)->where('comment_id', $reply->id)->first();
@@ -425,7 +467,7 @@ class HomeController extends Controller
                 'message' => 'Data retrieve successfully',
                 'data' => [
                     'total_comments' => Comment::where('post_id', $request->post_id)->count(),
-                    'comments' => $comments
+                    'comments' => $comments,
                 ],
             ]);
         } catch (Exception $ex) {
