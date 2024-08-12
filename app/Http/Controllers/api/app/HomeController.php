@@ -504,20 +504,65 @@ class HomeController extends Controller
     public function userStories(Request $request)
     {
         try {
+            $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id as post_id', 'content', 'type', 'user_id as user_info')->where('type', 'story')->orderBy('id', 'DESC')->where('user_id', $request->user_id)->paginate($pagination_value);
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
+                ->when($search_term, function ($query) use ($search_term) {
+                    return $query->where('title', 'like', '%' . $search_term . '%');
+                })
+                ->where('type', 'story')->orderBy('id', 'DESC')
+                ->where('user_id', $request->user_id)->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
-                $post->content = url('/') . '/' . $post->content;
-                $post->user_info = post_owner_info_stories($post->user_info);
+                if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
+                    $post->content = url('/') . '/' . $post->content;
+                } else {
+                    $post->content = $post->content;
+                }
+
+                $tags = [];
+                if ($post->tags) {
+                    foreach ($post->tags as $tag_id) {
+                        $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
+                        $user->avatar = url('/') . '/' . $user->avatar;
+
+                        $tags[] = [
+                            'id' => $user->id,
+                            'name' => $user->name,
+                            'avatar' => $user->avatar,
+                        ];
+                    }
+                }
+                $post->tags = $tags;
+                $post->total_like = Like::where('post_id', $post->id)->count();
+                $post->total_comment = Comment::where('post_id', $post->id)->count();
+                $post->owner_info = post_owner_info($post->owner_info, api_user()->id);
+                if (api_user()) {
+                    $like = Like::where('user_id', api_user()->id)->where('post_id', $post->id)->first();
+                    $bookmark = Bookmark::where('user_id', api_user()->id)->where('post_id', $post->id)->first();
+                    $post->is_reacted = $like ? 1 : 0;
+                    $post->is_bookmarked = $bookmark ? 1 : 0;
+                } else {
+                    $post->is_reacted = 0;
+                    $post->is_bookmarked = 0;
+                }
+
             }
 
-            return response()->json([
-                'status_code' => 200,
-                'message' => 'Data retrieve successfully',
-                'data' => $posts,
-            ]);
+            if ($posts->count() > 0) {
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Data retrieve successfully',
+                    'data' => $posts,
+                ]);
+            } else {
+                return response()->json([
+                    'status_code' => 404,
+                    'message' => 'No data available',
+                    'data' => [],
+                ]);
+            }
 
         } catch (Exception $ex) {
             return response($ex->getMessage());
