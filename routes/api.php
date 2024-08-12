@@ -56,6 +56,12 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
     Route::get('following-videos', [HomeController::class, 'followingVideos']);
     Route::get('following-stories', [HomeController::class, 'followingStories']);
 
+    // user stories
+    Route::get('user-stories', [HomeController::class, 'userStories']);
+
+    // post view count
+    Route::post('post-view-count', [HomeController::class, 'postViewCount']);
+
     // Follow Routes
     Route::post('follow-unfollow', [FollowController::class, 'followUnFollow']);
     Route::get('check-follow-status', [FollowController::class, 'followStatus']);
