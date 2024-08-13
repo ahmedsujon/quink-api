@@ -23,7 +23,7 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
                 ->when($search_term, function ($query) use ($search_term) {
                     return $query->where('title', 'like', '%' . $search_term . '%');
                 })
@@ -90,7 +90,7 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
                 ->when($search_term, function ($query) use ($search_term) {
                     return $query->where('title', 'like', '%' . $search_term . '%');
                 })
@@ -158,7 +158,7 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
                 ->when($search_term, function ($query) use ($search_term) {
                     return $query->where('title', 'like', '%' . $search_term . '%');
                 })
@@ -229,7 +229,7 @@ class HomeController extends Controller
 
             $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
                 ->when($search_term, function ($query) use ($search_term) {
                     return $query->where('title', 'like', '%' . $search_term . '%');
                 })
@@ -298,7 +298,7 @@ class HomeController extends Controller
 
             $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
                 ->when($search_term, function ($query) use ($search_term) {
                     return $query->where('title', 'like', '%' . $search_term . '%');
                 })
@@ -367,7 +367,7 @@ class HomeController extends Controller
 
             $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
                 ->when($search_term, function ($query) use ($search_term) {
                     return $query->where('title', 'like', '%' . $search_term . '%');
                 })
@@ -483,7 +483,7 @@ class HomeController extends Controller
 
             $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
 
-            $posts = Post::select('id as post_id', 'content', 'type', 'user_id as user_info')->where('type', 'story')->orderBy('id', 'DESC')->whereIn('user_id', $myFollowing)->paginate($pagination_value);
+            $posts = Post::select('id as post_id', 'content', 'type', 'media_type', 'user_id as user_info')->where('type', 'story')->orderBy('id', 'DESC')->whereIn('user_id', $myFollowing)->paginate($pagination_value);
 
             foreach ($posts as $key => $post) {
                 $post->content = url('/') . '/' . $post->content;
@@ -507,7 +507,7 @@ class HomeController extends Controller
             $search_term = $request->search_value;
             $pagination_value = $request->per_page ? $request->per_page : 10;
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
                 ->when($search_term, function ($query) use ($search_term) {
                     return $query->where('title', 'like', '%' . $search_term . '%');
                 })
