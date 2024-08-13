@@ -229,7 +229,7 @@ class HomeController extends Controller
 
             $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
                 ->when($search_term, function ($query) use ($search_term) {
                     return $query->where('title', 'like', '%' . $search_term . '%');
                 })
@@ -298,7 +298,7 @@ class HomeController extends Controller
 
             $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
                 ->when($search_term, function ($query) use ($search_term) {
                     return $query->where('title', 'like', '%' . $search_term . '%');
                 })
@@ -367,7 +367,7 @@ class HomeController extends Controller
 
             $myFollowing = Follower::where('follower_id', api_user()->id)->pluck('user_id')->toArray();
 
-            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info')
+            $posts = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
                 ->when($search_term, function ($query) use ($search_term) {
                     return $query->where('title', 'like', '%' . $search_term . '%');
                 })
