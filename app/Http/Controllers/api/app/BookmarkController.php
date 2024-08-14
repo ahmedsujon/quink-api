@@ -81,7 +81,10 @@ class BookmarkController extends Controller
             $vMarks = Bookmark::where('user_id', api_user()->id)->where('post_type', 'video')->get();
             foreach ($vMarks as $key => $vm) {
                 $post = Post::find($vm->post_id);
-                $vm->video = $post->content ? url('/') . '/' . $post->content : '';
+                $vm->video = [
+                    'video' => $post->content ? url('/') . '/' . $post->content : '',
+                    'thumbnail' => $post->thumbnail ? url('/') . '/' . $post->thumbnail : ''
+                ];
             }
 
             $bookmarks = [];
