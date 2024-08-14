@@ -52,7 +52,7 @@ class PostTableSeeder extends Seeder
             ];
             $post->type = $type;
             $post->media_type = $media_type;
-            $post->thumbnail = $type == 'video' ? 'assets/images/placeholder.jpg' : '';
+            $post->thumbnail = $type == 'video' || $media_type == 'video' ? 'assets/images/placeholder.jpg' : '';
             $post->views = rand(0, 100);
             $post->save();
 
