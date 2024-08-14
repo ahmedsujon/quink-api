@@ -19,7 +19,7 @@ class TagsController extends Controller
         $posts = Post::select('id', 'title', 'content', 'thumbnail', 'type')->whereIn('id', $taggedPosts)->paginate($paginationValue);
         foreach ($posts as $key => $post) {
             $post->content = url('/') . '/' . $post->content;
-            if ($post->type == 'video') {
+            if ($post->thumbnail) {
                 $post->thumbnail = url('/') . '/' . $post->thumbnail;
             }
         }
