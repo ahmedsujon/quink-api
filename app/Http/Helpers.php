@@ -3,8 +3,12 @@
 use Carbon\Carbon;
 use App\Models\Food;
 use App\Models\Admin;
+use App\Models\Follower;
+use App\Models\Notification;
 use App\Models\Setting;
 use App\Models\Permission;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -23,6 +27,84 @@ function api_user(){
     return Auth::guard('user-api')->user();
 }
 
+function getUserByID($user_id){
+    $user = User::find($user_id);
+    return $user;
+}
+
+function short_time($created_at)
+{
+    $time = Carbon::parse($created_at)->shortRelativeToNowDiffForHumans();
+    return str_replace(' ago', '', $time);
+}
+
+function short_time_chat($created_at)
+{
+    $time = Carbon::parse($created_at)->diffForHumans();
+
+    $time = str_replace('minutes', 'min', $time);
+    $time = str_replace('minute', 'min', $time);
+    $time = str_replace('seconds', 'sec', $time);
+    $time = str_replace('second', 'sec', $time);
+
+    return $time;
+}
+
+function post_owner_info($user_id, $auth_id)
+{
+    $user = DB::table('users')->select('id', 'name', 'avatar', 'email_verified_at as is_verified')->find($user_id);
+    $user->avatar = url('/') . '/'. $user->avatar;
+    $user->is_verified = $user->is_verified ? 1 : 0;
+
+    $follow = Follower::where('user_id', $user_id)->where('follower_id', $auth_id)->first();
+    $user->is_following = $follow ? 1 : 0;
+
+    return $user;
+}
+function post_owner_info_stories($user_id)
+{
+    $user = DB::table('users')->select('id', 'name', 'avatar', 'email_verified_at as is_verified')->find($user_id);
+    $user->avatar = url('/') . '/'. $user->avatar;
+    $user->is_verified = $user->is_verified ? 1 : 0;
+
+    return $user;
+}
+
+function comment_user_info($user_id)
+{
+    $user = DB::table('users')->select('id', 'name', 'avatar', 'email_verified_at as is_verified')->find($user_id);
+    $user->avatar = url('/') . '/'. $user->avatar;
+    $user->is_verified = $user->is_verified ? 1 : 0;
+    return $user;
+}
+
+function notification($for, $user_id, $notification_text, $type, $post_id = NULL, $comment_id = NULL)
+{
+    if ($type == 'follow') {
+        Notification::where('type', 'follow')->where('user_id', $user_id)->where('notification_for', $for)->delete();
+    }
+    if ($type == 'like') {
+        Notification::where('type', 'like')->where('user_id', $user_id)->where('notification_for', $for)->delete();
+    }
+    if ($type == 'comment') {
+        Notification::where('type', 'comment')->where('user_id', $user_id)->where('notification_for', $for)->delete();
+    }
+    if ($type == 'comment_reply') {
+        Notification::where('type', 'comment_reply')->where('user_id', $user_id)->where('notification_for', $for)->delete();
+    }
+
+    if ($for != $user_id) {
+        $notification = new Notification();
+        $notification->notification_for = $for;
+        $notification->user_id = $user_id;
+        $notification->post_id = $post_id;
+        $notification->comment_id = $comment_id;
+        $notification->notification_text = $notification_text;
+        $notification->type = $type;
+        $notification->save();
+    }
+
+}
 
 function uploadFile($file, $folder)
 {

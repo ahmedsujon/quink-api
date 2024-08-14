@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('chats', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('from')->nullable();
-            $table->unsignedBigInteger('to')->nullable();
+            $table->unsignedBigInteger('sender')->nullable();
+            $table->unsignedBigInteger('receiver')->nullable();
             $table->text('last_msg')->nullable();
-            $table->tinyInteger('notification_status')->default(0);
             $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });

@@ -14,10 +14,16 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->text('caption')->nullable();
+            $table->text('title')->nullable();
+            $table->longText('description')->nullable();
             $table->longText('content')->nullable();
-            $table->longText('tags')->nullable();
-            $table->enum('type', ['photo', 'video', 'text'])->nullable();
+            $table->longText('hash_tags')->nullable();
+            $table->text('tags')->nullable();
+            $table->enum('type', ['photo', 'video', 'story'])->nullable();
+            $table->enum('media_type', ['photo', 'video'])->nullable();
+            $table->string('thumbnail', 2048)->nullable();
+            $table->text('link')->nullable();
+            $table->longText('music')->nullable();
             $table->integer('views')->default(0);
             $table->timestamps();
         });

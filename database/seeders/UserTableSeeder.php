@@ -26,9 +26,10 @@ class UserTableSeeder extends Seeder
 
             if (!$getUser) {
                 $user = new User();
-                $user->name = $name;
+                $user->name = ucwords($name);
                 $user->username = 'user' . rand(10, 99);
                 $user->email = $email;
+                $user->email_verified_at = now();
                 $user->password = Hash::make('12345678');
                 $user->avatar = 'assets/images/avatar.png';
                 $user->gender = $faker->randomElement(['Male', 'Female']);

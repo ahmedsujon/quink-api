@@ -11,6 +11,10 @@ class Post extends Model
 
     protected $table = 'posts';
     protected $casts = [
+        'music' => 'array',
+        'hash_tags' => 'array',
         'tags' => 'array',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 }
