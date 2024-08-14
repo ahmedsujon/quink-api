@@ -6,19 +6,18 @@
                 <div class="navbar-brand-box">
                     <a href="{{ route('admin.dashboard') }}" class="logo logo-dark">
                         <span class="logo-sm">
-                            <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
+                            <img src="{{ asset('assets/images/quink-sm.png') }}" alt="" height="22">
                         </span>
                         <span class="logo-lg">
-                            <img src="{{ asset('assets/images/logo.png') }}" alt="" height="17">
+                            <img src="{{ asset('assets/images/quink.png') }}" alt="" height="17">
                         </span>
                     </a>
-
                     <a href="{{ route('admin.dashboard') }}" class="logo logo-light">
                         <span class="logo-sm">
-                            <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
+                            <img src="{{ asset('assets/images/quink-sm.png') }}" alt="" height="22">
                         </span>
                         <span class="logo-lg">
-                            <img src="{{ asset('assets/images/logo.png') }}" alt="" height="35">
+                            <img src="{{ asset('assets/images/quink.png') }}" alt="" height="35">
                         </span>
                     </a>
                 </div>
