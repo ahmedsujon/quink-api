@@ -159,7 +159,7 @@ class PostController extends Controller
     public function postTagUsers(Request $request)
     {
         try {
-            $users = DB::table('users')->select('id', 'name', 'username', 'avatar')->where('username', 'like', '%' . $request->search_value . '%')->get();
+            $users = DB::table('users')->select('id', 'name', 'username', 'avatar')->where('name', 'like', '%' . $request->search_value . '%')->get();
 
             foreach ($users as $key => $user) {
                 $user->avatar = url('/') . '/' . $user->avatar;
