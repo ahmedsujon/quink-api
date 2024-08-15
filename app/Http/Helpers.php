@@ -1,16 +1,13 @@
 <?php
 
-use Carbon\Carbon;
-use App\Models\Food;
 use App\Models\Admin;
 use App\Models\Follower;
 use App\Models\Notification;
-use App\Models\Setting;
 use App\Models\Permission;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
 
 function admin()
 {
@@ -23,11 +20,13 @@ function getAdminByID($id)
 }
 
 // Api
-function api_user(){
+function api_user()
+{
     return Auth::guard('user-api')->user();
 }
 
-function getUserByID($user_id){
+function getUserByID($user_id)
+{
     $user = User::find($user_id);
     return $user;
 }
@@ -53,7 +52,7 @@ function short_time_chat($created_at)
 function post_owner_info($user_id, $auth_id)
 {
     $user = DB::table('users')->select('id', 'name', 'avatar', 'email_verified_at as is_verified')->find($user_id);
-    $user->avatar = url('/') . '/'. $user->avatar;
+    $user->avatar = url('/') . '/' . $user->avatar;
     $user->is_verified = $user->is_verified ? 1 : 0;
 
     $follow = Follower::where('user_id', $user_id)->where('follower_id', $auth_id)->first();
@@ -64,7 +63,7 @@ function post_owner_info($user_id, $auth_id)
 function post_owner_info_stories($user_id)
 {
     $user = DB::table('users')->select('id', 'name', 'avatar', 'email_verified_at as is_verified')->find($user_id);
-    $user->avatar = url('/') . '/'. $user->avatar;
+    $user->avatar = url('/') . '/' . $user->avatar;
     $user->is_verified = $user->is_verified ? 1 : 0;
 
     return $user;
@@ -73,12 +72,12 @@ function post_owner_info_stories($user_id)
 function comment_user_info($user_id)
 {
     $user = DB::table('users')->select('id', 'name', 'avatar', 'email_verified_at as is_verified')->find($user_id);
-    $user->avatar = url('/') . '/'. $user->avatar;
+    $user->avatar = url('/') . '/' . $user->avatar;
     $user->is_verified = $user->is_verified ? 1 : 0;
     return $user;
 }
 
-function notification($for, $user_id, $notification_text, $type, $post_id = NULL, $comment_id = NULL)
+function notification($for, $user_id, $notification_text, $type, $post_id = null, $comment_id = null)
 {
     if ($type == 'follow') {
         Notification::where('type', 'follow')->where('user_id', $user_id)->where('notification_for', $for)->delete();
@@ -108,13 +107,47 @@ function notification($for, $user_id, $notification_text, $type, $post_id = NULL
 
 function uploadFile($file, $folder)
 {
-    $fileName = uniqid() . Carbon::now()->timestamp. '.' .$file->extension();
+    $fileName = uniqid() . Carbon::now()->timestamp . '.' . $file->extension();
     $file->storeAs($folder, $fileName);
 
-    $file_name = 'uploads/'.$folder.'/'.$fileName;
+    $file_name = 'uploads/' . $folder . '/' . $fileName;
     return $file_name;
 }
 
+/**
+ * @param $n
+ * @return string
+ * Use to convert large positive numbers in to short form like 1K+, 100K+, 199K+, 1M+, 10M+, 1B+ etc
+ */
+function number_format_short($n)
+{
+    $n_format = 0;
+    $suffix = '';
+
+    if ($n > 0 && $n < 1000) {
+        // 1 - 999
+        $n_format = floor($n);
+        $suffix = '';
+    } else if ($n >= 1000 && $n < 1000000) {
+        // 1k-999k
+        $n_format = floor($n / 1000);
+        $suffix = 'K';
+    } else if ($n >= 1000000 && $n < 1000000000) {
+        // 1m-999m
+        $n_format = floor($n / 1000000);
+        $suffix = 'M';
+    } else if ($n >= 1000000000 && $n < 1000000000000) {
+        // 1b-999b
+        $n_format = floor($n / 1000000000);
+        $suffix = 'B';
+    } else if ($n >= 1000000000000) {
+        // 1t+
+        $n_format = floor($n / 1000000000000);
+        $suffix = 'T';
+    }
+
+    return !empty($n_format . $suffix) ? $n_format . $suffix : 0;
+}
 
 function adminPermissions()
 {
@@ -173,12 +206,13 @@ function loadingStateWithText($key, $title)
     return $loadingSpinner;
 }
 
-function showErrorMessage($message, $file, $line){
-    if(env('APP_DEBUG') == 'true'){
+function showErrorMessage($message, $file, $line)
+{
+    if (env('APP_DEBUG') == 'true') {
         $error_array = [
             'Message' => $message,
             'File' => $file,
-            'Line No' => $line
+            'Line No' => $line,
         ];
         return dd($error_array);
     }

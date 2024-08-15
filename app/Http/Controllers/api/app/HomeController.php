@@ -12,6 +12,7 @@ use App\Models\CommentLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 
 class HomeController extends Controller
@@ -598,6 +599,57 @@ class HomeController extends Controller
                     'data' => []
                 ]);
             }
+        } catch (Exception $ex) {
+            return response($ex->getMessage());
+        }
+    }
+
+    public function searchUsers(Request $request)
+    {
+        try {
+            $search_term = $request->search_value;
+            $pagination_value = $request->per_page ? $request->per_page : 10;
+
+            if (api_user()) {
+                $users = User::select('id', 'name', 'avatar')
+                ->where('name', 'like', '%' . $search_term . '%')
+                ->where('id', '!=', api_user()->id)
+                ->orderBy('name', 'ASC')
+                ->paginate($pagination_value);
+            } else {
+                $users = User::select('id', 'name', 'avatar')
+                ->where('name', 'like', '%' . $search_term . '%')
+                ->orderBy('name', 'ASC')
+                ->paginate($pagination_value);
+            }
+
+            foreach ($users as $key => $user) {
+                $user->avatar = $user->avatar ? url('/') . '/' . $user->avatar : '';
+
+                $user->follower = number_format_short(Follower::where('user_id', $user->id)->count());
+
+                if (api_user()) {
+                    $follow = Follower::where('user_id', $user->id)->where('follower_id', api_user()->id)->first();
+                    $user->is_following = $follow ? 1 : 0;
+                } else {
+                    $user->is_following = 0;
+                }
+            }
+
+            if ($users->count() > 0) {
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Data retrieve successfully',
+                    'data' => $users,
+                ]);
+            } else {
+                return response()->json([
+                    'status_code' => 404,
+                    'message' => 'No data available',
+                    'data' => [],
+                ]);
+            }
+
         } catch (Exception $ex) {
             return response($ex->getMessage());
         }
