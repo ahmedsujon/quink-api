@@ -170,8 +170,12 @@ class ProfileController extends Controller
                 $data['total_photos'] = Post::select('id')->where('user_id', $request->user_id)->where('type', 'photo')->count();
                 $data['total_videos'] = Post::select('id')->where('user_id', $request->user_id)->where('type', 'video')->count();
 
-                $follow = Follower::where('user_id', $request->user_id)->where('follower_id', api_user()->id)->first();
-                $data['is_following'] = $follow ? 1 : 0;
+                if (api_user()) {
+                    $follow = Follower::where('user_id', $request->user_id)->where('follower_id', api_user()->id)->first();
+                    $data['is_following'] = $follow ? 1 : 0;
+                } else {
+                    $data['is_following'] = 0;
+                }
 
                 return response()->json([
                     'status_code' => 200,

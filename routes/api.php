@@ -51,6 +51,9 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
     Route::get('delete-post', [PostController::class, 'deletePost']);
     Route::get('post-tag-users', [PostController::class, 'postTagUsers']);
 
+    // search user
+    Route::get('search-user', [HomeController::class, 'searchUsers']);
+
     // Home Page Posts Following
     Route::get('following-photos', [HomeController::class, 'followingPhotos']);
     Route::get('following-videos', [HomeController::class, 'followingVideos']);
