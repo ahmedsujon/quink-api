@@ -626,7 +626,7 @@ class HomeController extends Controller
             foreach ($users as $key => $user) {
                 $user->avatar = $user->avatar ? url('/') . '/' . $user->avatar : '';
 
-                $user->follower = Follower::where('user_id', $user->id)->count();
+                $user->follower = number_format_short(Follower::where('user_id', $user->id)->count());
 
                 if (api_user()) {
                     $follow = Follower::where('user_id', $user->id)->where('follower_id', api_user()->id)->first();
