@@ -29,7 +29,8 @@ class NotificationController extends Controller
                     $post_info = [
                         'id' => $post->id,
                         'type' => $post->type,
-                        'content' => $post->content ? url('/') . '/' . $post->content : null
+                        'content' => $post->content ? url('/') . '/' . $post->content : null,
+                        'thumbnail' => $post->thumbnail ? url('/') . '/' . $post->thumbnail : null
                     ];
                 }
                 $notification_array[] = [
