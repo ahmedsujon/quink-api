@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\api\app;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bookmark;
+use App\Models\Comment;
+use App\Models\Like;
 use App\Models\Post;
 use Exception;
 use Illuminate\Http\Request;
@@ -170,6 +173,64 @@ class PostController extends Controller
                 'message' => 'Data retrieve successfully',
                 'data' => $users,
             ]);
+        } catch (Exception $ex) {
+            return response($ex->getMessage());
+        }
+    }
+
+    public function postDetails(Request $request)
+    {
+        try {
+            $post = Post::select('id', 'title', 'description', 'content', 'type', 'media_type', 'hash_tags', 'tags', 'link', 'music', 'views', 'user_id as owner_info', 'created_at')
+                ->where('id', $request->post_id)->first();
+
+            if ($post->type == 'photo' || $post->type == 'video' || $post->type == 'story') {
+                $post->content = url('/') . '/' . $post->content;
+            } else {
+                $post->content = $post->content;
+            }
+
+            $tags = [];
+            if ($post->tags) {
+                foreach ($post->tags as $tag_id) {
+                    $user = DB::table('users')->select('id', 'name', 'avatar')->find($tag_id);
+                    $user->avatar = url('/') . '/' . $user->avatar;
+
+                    $tags[] = [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'avatar' => $user->avatar,
+                    ];
+                }
+            }
+            $post->tags = $tags;
+            $post->total_like = Like::where('post_id', $post->id)->count();
+            $post->total_comment = Comment::where('post_id', $post->id)->count();
+            $post->owner_info = post_owner_info($post->owner_info, $request->authenticated_user_id);
+            if ($request->authenticated_user_id) {
+                $like = Like::where('user_id', $request->authenticated_user_id)->where('post_id', $post->id)->first();
+                $bookmark = Bookmark::where('user_id', $request->authenticated_user_id)->where('post_id', $post->id)->first();
+                $post->is_reacted = $like ? 1 : 0;
+                $post->is_bookmarked = $bookmark ? 1 : 0;
+            } else {
+                $post->is_reacted = 0;
+                $post->is_bookmarked = 0;
+            }
+
+            if ($post) {
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Data retrieve successfully',
+                    'data' => $post,
+                ]);
+            } else {
+                return response()->json([
+                    'status_code' => 404,
+                    'message' => 'No data available',
+                    'data' => [],
+                ]);
+            }
+
         } catch (Exception $ex) {
             return response($ex->getMessage());
         }

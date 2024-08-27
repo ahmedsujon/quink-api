@@ -50,6 +50,7 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
     Route::post('update-post', [PostController::class, 'updatePost']);
     Route::get('delete-post', [PostController::class, 'deletePost']);
     Route::get('post-tag-users', [PostController::class, 'postTagUsers']);
+    Route::get('post-details', [PostController::class, 'postDetails']);
 
     // search user
     Route::get('search-user', [HomeController::class, 'searchUsers']);
