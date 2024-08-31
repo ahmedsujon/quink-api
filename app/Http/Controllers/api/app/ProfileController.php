@@ -106,8 +106,8 @@ class ProfileController extends Controller
             'name' => 'required',
             'user_name' => 'required',
             'websites' => 'required',
-            'location' => 'required',
-            'bio' => 'required',
+            // 'location' => 'required',
+            // 'bio' => 'required',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
