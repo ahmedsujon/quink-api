@@ -54,6 +54,7 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
 
     // search user
     Route::get('search-user', [HomeController::class, 'searchUsers']);
+    Route::get('post-info', [HomeController::class, 'postInfo']);
 
     // Home Page Posts Following
     Route::get('following-photos', [HomeController::class, 'followingPhotos']);

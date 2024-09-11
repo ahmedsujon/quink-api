@@ -654,5 +654,50 @@ class HomeController extends Controller
             return response($ex->getMessage());
         }
     }
+
+    public function postInfo(Request $request)
+    {
+        try {
+            $post_id = $request->post_id;
+
+            $post = Post::find($post_id);
+
+            if ($post) {
+                if (api_user()) {
+                    $like = Like::where('user_id', api_user()->id)->where('post_id', $post->id)->first();
+                    $bookmark = Bookmark::where('user_id', api_user()->id)->where('post_id', $post->id)->first();
+
+                    $post->is_reacted = $like ? 1 : 0;
+                    $post->is_bookmarked = $bookmark ? 1 : 0;
+                } else {
+                    $post->is_reacted = 0;
+                    $post->is_bookmarked = 0;
+                }
+
+                $info = [
+                    'total_like' => Like::where('post_id', $post->id)->count(),
+                    'total_comments' => Comment::where('post_id', $post->id)->count(),
+                    'total_views' => $post->views,
+                    'is_reacted' => $post->is_reacted,
+                    'is_bookmarked' => $post->is_bookmarked
+                ];
+
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Data retrieve successfully',
+                    'data' => $info,
+                ]);
+            } else {
+                return response()->json([
+                    'status_code' => 404,
+                    'message' => 'No data available',
+                    'data' => [],
+                ]);
+            }
+
+        } catch (Exception $ex) {
+            return response($ex->getMessage());
+        }
+    }
 }
 
