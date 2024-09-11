@@ -666,12 +666,15 @@ class HomeController extends Controller
                 if (api_user()) {
                     $like = Like::where('user_id', api_user()->id)->where('post_id', $post->id)->first();
                     $bookmark = Bookmark::where('user_id', api_user()->id)->where('post_id', $post->id)->first();
+                    $follow = Follower::where('user_id', $post->user_id)->where('follower_id', api_user()->id)->first();
 
+                    $post->is_following = $follow ? 1 : 0;
                     $post->is_reacted = $like ? 1 : 0;
                     $post->is_bookmarked = $bookmark ? 1 : 0;
                 } else {
                     $post->is_reacted = 0;
                     $post->is_bookmarked = 0;
+                    $post->is_following = 0;
                 }
 
                 $info = [
@@ -679,7 +682,8 @@ class HomeController extends Controller
                     'total_comments' => Comment::where('post_id', $post->id)->count(),
                     'total_views' => $post->views,
                     'is_reacted' => $post->is_reacted,
-                    'is_bookmarked' => $post->is_bookmarked
+                    'is_bookmarked' => $post->is_bookmarked,
+                    'is_following' => $post->is_following
                 ];
 
                 return response()->json([
