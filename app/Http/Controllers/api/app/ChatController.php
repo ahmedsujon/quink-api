@@ -116,7 +116,7 @@ class ChatController extends Controller
                     })->orWhere(function ($subQuery) use ($searchValue, $authUserId) {
                         $subQuery->where('receiver_user.name', 'like', "%{$searchValue}%")
                             ->where('chats.sender', $authUserId);
-                    });
+                    })->orWhere('chats.last_msg', 'like', '%' . $searchValue . '%');
                 });
 
             if ($request->filter_value == 'unread') {

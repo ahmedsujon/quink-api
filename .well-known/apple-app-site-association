@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "Quinkapp@outlook.com.com.quink.app.quink",
+        "paths": [
+          "/profile/*",
+          "/post/*"
+        ]
+      }
+    ]
+  }
+}

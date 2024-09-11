@@ -1,0 +1,10 @@
+[{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.quink.app.quink",
+      "sha256_cert_fingerprints": [
+    "3A:52:B4:E1:9F:AC:19:7E:B3:71:3B:18:9C:6D:19:39:9A:3C:B6:CD:C1:F0:5F:82:FC:05:CF:03:20:F4:F8:D9"
+      ]
+    }
+  }]
