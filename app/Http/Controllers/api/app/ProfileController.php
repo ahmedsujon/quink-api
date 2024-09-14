@@ -222,4 +222,39 @@ class ProfileController extends Controller
         ]);
 
     }
+
+    public function userFollowersFollowings(Request $request)
+    {
+        $paginationValue = $request->per_page ?? 10;
+
+        $type = $request->type;
+        if ($type == 'followings') {
+            $followings = Follower::where('follower_id', $request->user_id)->pluck('user_id')->toArray();
+            $all_data = User::select('id', 'name', 'avatar as image')->whereIn('id', $followings)->paginate($paginationValue);
+        } else {
+            $followers = Follower::where('user_id', $request->user_id)->pluck('follower_id')->toArray();
+            $all_data = User::select('id', 'name', 'avatar as image')->whereIn('id', $followers)->paginate($paginationValue);
+        }
+
+        foreach ($all_data as $key => $data) {
+            $data->image = url('/') . '/' . $data->image;
+
+            $total_follower = Follower::where('user_id', $data->id)->count();
+            $data->total_followers = $total_follower;
+
+            if (api_user()) {
+                $follow = Follower::where('user_id', $data->id)->where('follower_id', api_user()->id)->first();
+                $data->is_following = $follow ? 1 : 0;
+            } else {
+                $data->is_following = 0;
+            }
+        }
+
+        return response()->json([
+            'status_code' => 200,
+            'message' => 'Data retrieve successfully',
+            'data' => $all_data,
+        ]);
+
+    }
 }
