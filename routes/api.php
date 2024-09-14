@@ -105,6 +105,7 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
     Route::get('user-profile', [ProfileController::class, 'userProfile']);
     Route::get('user-profile/photos', [ProfileController::class, 'userPhotos']);
     Route::get('user-profile/videos', [ProfileController::class, 'userVideos']);
+    Route::get('user/followers-followings', [ProfileController::class, 'userFollowersFollowings']);
 
     // Tags Routes
     Route::get('user/my-tags', [TagsController::class, 'allTags']);
