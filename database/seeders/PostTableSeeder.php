@@ -48,7 +48,7 @@ class PostTableSeeder extends Seeder
             $post->music = [
                 'id' => 1,
                 'name' => 'Ahwarun',
-                'music' => url('/') . '/assets/audio/ahwarun.mp3',
+                'music' => 'https://quink.xyz/assets/audio/ahwarun.mp3',
             ];
             $post->type = $type;
             $post->media_type = $media_type;
