@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('fcm_tokens', function (Blueprint $table) {
             $table->id();
+            $table->longText('user_id');
             $table->longText('token');
             $table->tinyInteger('status')->default(1);
             $table->timestamps();

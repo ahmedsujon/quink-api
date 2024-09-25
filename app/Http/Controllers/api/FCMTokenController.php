@@ -13,6 +13,7 @@ class FCMTokenController extends Controller
     public function storeToken(Request $request)
     {
         $rules = [
+            'user_id' => 'required',
             'token' => 'required',
         ];
         $validator = Validator::make($request->all(), $rules);
@@ -21,10 +22,11 @@ class FCMTokenController extends Controller
         }
 
         try {
-            $getToken = FcmToken::where('token', $request->token)->first();
+            $getToken = FcmToken::where('user_id', $request->user_id)->where('token', $request->token)->first();
 
             if (!$getToken) {
                 $token = new FcmToken();
+                $token->user_id = $request->user_id;
                 $token->token = $request->token;
                 $token->save();
             }

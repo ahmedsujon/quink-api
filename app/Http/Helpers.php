@@ -102,6 +102,8 @@ function notification($for, $user_id, $notification_text, $type, $post_id = null
         $notification->notification_text = $notification_text;
         $notification->type = $type;
         $notification->save();
+
+        pushNotification($for, 'New Notification', $notification_text);
     }
 
 }
@@ -220,11 +222,11 @@ function showErrorMessage($message, $file, $line)
 }
 
 
-function pushNotification($title, $body)
+function pushNotification($user_id, $title, $body)
 {
     $url = 'https://fcm.googleapis.com/fcm/send';
 
-    $FcmToken = FcmToken::where('status', 1)->pluck('token')->all();
+    $FcmToken = FcmToken::where('user_id', $user_id)->where('status', 1)->pluck('token')->all();
 
     $serverKey = env('FIREBASE_SERVER_KEY'); // ADD SERVER KEY HERE PROVIDED BY FCM
 
