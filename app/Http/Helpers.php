@@ -3,12 +3,15 @@
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Admin;
+use GuzzleHttp\Client;
 use App\Models\FcmToken;
 use App\Models\Follower;
 use App\Models\Permission;
 use App\Models\Notification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Google\Auth\Credentials\ServiceAccountCredentials;
 
 function admin()
 {
@@ -82,15 +85,23 @@ function notification($for, $user_id, $notification_text, $type, $post_id = null
 {
     if ($type == 'follow') {
         Notification::where('type', 'follow')->where('user_id', $user_id)->where('notification_for', $for)->delete();
+
+        $title = 'Follow';
     }
     if ($type == 'like') {
         Notification::where('type', 'like')->where('user_id', $user_id)->where('notification_for', $for)->delete();
+
+        $title = 'Like';
     }
     if ($type == 'comment') {
         Notification::where('type', 'comment')->where('user_id', $user_id)->where('notification_for', $for)->delete();
+
+        $title = 'Comment';
     }
     if ($type == 'comment_reply') {
         Notification::where('type', 'comment_reply')->where('user_id', $user_id)->where('notification_for', $for)->delete();
+
+        $title = 'Comment Reply';
     }
 
     if ($for != $user_id) {
@@ -103,7 +114,10 @@ function notification($for, $user_id, $notification_text, $type, $post_id = null
         $notification->type = $type;
         $notification->save();
 
-        pushNotification($for, 'New Notification', $notification_text);
+        $post = DB::table('posts')->find($post_id);
+        $post_type = $post ? $post->type : 'photo';
+
+        pushNotification($for, $title, $notification_text, $post_id, $post_type, $comment_id);
     }
 
 }
@@ -222,44 +236,75 @@ function showErrorMessage($message, $file, $line)
 }
 
 
-function pushNotification($user_id, $title, $body)
+function pushNotification($user_id, $title, $body, $post_id, $post_type, $comment_id)
 {
-    $url = 'https://fcm.googleapis.com/fcm/send';
+    $FcmToken = FcmToken::where('user_id', $user_id)->where('status', 1)->pluck('token')->first();
 
-    $FcmToken = FcmToken::where('user_id', $user_id)->where('status', 1)->pluck('token')->all();
-
-    $serverKey = env('FIREBASE_SERVER_KEY'); // ADD SERVER KEY HERE PROVIDED BY FCM
-
-    $data = [
-        "registration_ids" => $FcmToken,
-        "notification" => [
-            "title" => $title,
-            "body" => $body,
-        ],
-    ];
-    $encodedData = json_encode($data);
-
-    $headers = [
-        'Authorization:key=' . $serverKey,
-        'Content-Type: application/json',
-    ];
-
-    $ch = curl_init();
-
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-    // Disabling SSL Certificate support temporarly
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedData);
-    // Execute post
-    $result = curl_exec($ch);
-    if ($result === false) {
-        die('Curl failed: ' . curl_error($ch));
+    // Check if there are tokens to send notification to
+    if (empty($FcmToken)) {
+        Log::warning('No active FCM tokens found for user ID: ' . $user_id);
+        return false;
     }
-    // Close connection
-    curl_close($ch);
+
+    // Path to your service account file (downloaded from Firebase console)
+    $serviceAccountFile = 'firebase/quink-app-24-firebase-adminsdk-1f0uw-da79b74261.json';
+
+    // Authenticate and get OAuth 2.0 token
+    $accessToken = getAccessToken($serviceAccountFile);
+
+    $notification_body = [
+        'notification_text' => $body,
+        'post_id' => $post_id,
+        'post_type' => $post_type,
+        'comment_id' => $comment_id
+    ];
+    // Prepare notification payload
+    $data = [
+        "message" => [
+            "token" => $FcmToken, // Single FCM token
+            "notification" => [
+                "title" => $title,
+                "body" => json_encode($notification_body),
+            ]
+        ]
+    ];
+
+    // Send the notification using the HTTP v1 API
+    $url = 'https://fcm.googleapis.com/v1/projects/'. env('FIREBASE_PROJECT_ID') .'/messages:send';
+    $client = new Client();
+    $response = $client->post($url, [
+        'headers' => [
+            'Authorization' => 'Bearer ' . $accessToken,
+            'Content-Type' => 'application/json',
+        ],
+        'json' => $data,
+    ]);
+
+    if ($response->getStatusCode() !== 200) {
+        Log::error('Push notification failed: ' . $response->getBody());
+        return false;
+    }
+
+    Log::info('Push notification sent successfully: ' . $response->getBody());
+    return true;
+}
+
+// Helper function to get OAuth 2.0 Access Token
+function getAccessToken($serviceAccountFile)
+{
+    // Define the required scope for Firebase Messaging
+    $scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
+
+    // Load the service account credentials
+    $credentials = new ServiceAccountCredentials($scopes, $serviceAccountFile);
+
+    // Generate the access token
+    $authToken = $credentials->fetchAuthToken();
+
+    // Check for errors
+    if (!isset($authToken['access_token'])) {
+        throw new Exception('Failed to obtain access token from Firebase.');
+    }
+
+    return $authToken['access_token'];
 }
