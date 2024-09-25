@@ -1,16 +1,17 @@
 <?php
 
-use App\Http\Controllers\api\app\BookmarkController;
-use App\Http\Controllers\api\app\ChatController;
-use App\Http\Controllers\api\app\CommentController;
-use App\Http\Controllers\api\app\FollowController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\api\app\ChatController;
 use App\Http\Controllers\api\app\HomeController;
 use App\Http\Controllers\api\app\LikeController;
-use App\Http\Controllers\api\app\NotificationController;
 use App\Http\Controllers\api\app\PostController;
-use App\Http\Controllers\api\app\ProfileController;
 use App\Http\Controllers\api\app\TagsController;
+use App\Http\Controllers\api\FCMTokenController;
+use App\Http\Controllers\api\app\FollowController;
+use App\Http\Controllers\api\app\CommentController;
+use App\Http\Controllers\api\app\ProfileController;
+use App\Http\Controllers\api\app\BookmarkController;
+use App\Http\Controllers\api\app\NotificationController;
 use App\Http\Controllers\api\app\user\auth\AuthenticationController;
 use App\Http\Controllers\api\app\user\auth\UserResetPasswordController;
 
@@ -116,5 +117,7 @@ Route::group(['middleware' => ['jwtUser:user-api', 'jwt.auth'], 'prefix' => 'v1/
     // Email Verification
     Route::post('user/verify-email', [AuthenticationController::class, 'verifyEmail']);
     Route::post('user/resend-verification-code', [AuthenticationController::class, 'resendCode']);
+
+    Route::post('user/store-fcm-token', [FCMTokenController::class, 'storeToken']);
 });
 
