@@ -247,7 +247,7 @@ function pushNotification($user_id, $title, $body, $post_id, $post_type, $commen
     }
 
     // Path to your service account file (downloaded from Firebase console)
-    $serviceAccountFile = 'firebase/quink-app-24-firebase-adminsdk-1f0uw-da79b74261.json';
+    $serviceAccountFile = 'firebase/quink-app-24-firebase-adminsdk-1f0uw-89b6ecace0.json';
 
     // Authenticate and get OAuth 2.0 token
     $accessToken = getAccessToken($serviceAccountFile);
