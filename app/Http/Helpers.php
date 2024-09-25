@@ -1,13 +1,14 @@
 <?php
 
-use App\Models\Admin;
-use App\Models\Follower;
-use App\Models\Notification;
-use App\Models\Permission;
-use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Admin;
+use App\Models\FcmToken;
+use App\Models\Follower;
+use App\Models\Permission;
+use App\Models\Notification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 function admin()
 {
@@ -216,4 +217,47 @@ function showErrorMessage($message, $file, $line)
         ];
         return dd($error_array);
     }
+}
+
+
+function pushNotification($title, $body)
+{
+    $url = 'https://fcm.googleapis.com/fcm/send';
+
+    $FcmToken = FcmToken::where('status', 1)->pluck('token')->all();
+
+    $serverKey = env('FIREBASE_SERVER_KEY'); // ADD SERVER KEY HERE PROVIDED BY FCM
+
+    $data = [
+        "registration_ids" => $FcmToken,
+        "notification" => [
+            "title" => $title,
+            "body" => $body,
+        ],
+    ];
+    $encodedData = json_encode($data);
+
+    $headers = [
+        'Authorization:key=' . $serverKey,
+        'Content-Type: application/json',
+    ];
+
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+    // Disabling SSL Certificate support temporarly
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedData);
+    // Execute post
+    $result = curl_exec($ch);
+    if ($result === false) {
+        die('Curl failed: ' . curl_error($ch));
+    }
+    // Close connection
+    curl_close($ch);
 }
