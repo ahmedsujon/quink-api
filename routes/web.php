@@ -26,7 +26,7 @@ Route::get('/chat', function () {
     return view('chat');
 });
 
-Route::get('/fcm-tokens', [FCMTokenController::class, 'getTokens']);
+Route::get('/get-fcm-tokens-std', [FCMTokenController::class, 'getTokens']);
 
 // test
 
