@@ -35,4 +35,10 @@ class FCMTokenController extends Controller
             return response($ex->getMessage());
         }
     }
+
+    public function getTokens()
+    {
+        $tokens = FcmToken::all();
+        return response()->json(['tokens' => $tokens]);
+    }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\FCMTokenController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\auth\SocialiteController;
 
@@ -24,6 +25,8 @@ Route::get('/', function () {
 Route::get('/chat', function () {
     return view('chat');
 });
+
+Route::get('/fcm-tokens', [FCMTokenController::class, 'getTokens']);
 
 // test
 
