@@ -120,7 +120,8 @@ class ChatController extends Controller
                 });
 
             if ($request->filter_value == 'unread') {
-                $chats = $chats->where('chats.status', 0);
+                $chat_msgs = Message::where('receiver', api_user()->id)->where('status', 0)->distinct()->pluck('chat_id')->toArray();
+                $chats = $chats->whereIn('chats.id', $chat_msgs);
             }
 
             $chats = $chats->orderBy('chats.updated_at', 'DESC')->paginate($pagination_value);
@@ -164,6 +165,11 @@ class ChatController extends Controller
         try {
             $pagination_value = $request->per_page ? $request->per_page : 20;
             $messages = Message::where('chat_id', $request->chat_id)->orderBy('created_at', 'asc')->paginate($pagination_value);
+
+            foreach ($messages as $key => $msg) {
+                $msg->status = 1;
+                $msg->save();
+            }
 
             $chat = Chat::find($request->chat_id);
             if ($chat->sender == api_user()->id) {
@@ -257,6 +263,10 @@ class ChatController extends Controller
             }
 
             if ($message->save()) {
+
+                $chat = Chat::find($request->chat_id);
+                $chat->last_msg = $request->message;
+                $chat->save();
 
                 $user = User::find($request->sender);
 

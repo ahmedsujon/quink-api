@@ -35,7 +35,7 @@ class ChatTableSeeder extends Seeder
                 $message->message = $faker->sentence(5);
                 $message->file = 'assets/images/placeholder.jpg';
                 $message->file_type = 'image';
-                $message->status = 1;
+                $message->status = 0;
                 $message->created_at = now()->subDays($rand_date);
                 $message->save();
             }
