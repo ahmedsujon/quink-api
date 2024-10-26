@@ -258,6 +258,10 @@ class ChatController extends Controller
 
             if ($message->save()) {
 
+                $chat = Chat::find($request->chat_id);
+                $chat->last_msg = $request->message;
+                $chat->save();
+
                 $user = User::find($request->sender);
 
                 $content = [
